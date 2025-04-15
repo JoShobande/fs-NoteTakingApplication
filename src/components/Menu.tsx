@@ -1,7 +1,8 @@
 import Image from "next/image";
+import { ReactNode } from "react";
 
 
-const Menu = () => {
+const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     return(
         <section>
             <div className='min-h-screen bg-gray-100'>
@@ -31,19 +32,12 @@ const Menu = () => {
                     <div className="flex-1 -ml-4 -mt-2 z-10">
                         <div className="rounded-tl-[30px] overflow-hidden">
                             <main className="px-8 py-6 bg-gray-200">
-                                <p>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, at quia. 
-                                    Iusto nisi vero cumque id animi voluptatem iste perferendis est...
-                                </p>
-                                <p>Additional content …</p>
-                                <p>More content …</p>
-                                <p>Even more content …</p>
+                                {currentPage}
                             </main>
                         </div>
                     </div>   
                 </div>
-            </div>
-            
+            </div> 
         </section>
     )
 }
