@@ -2,17 +2,25 @@
 
 import Image from "next/image";
 import { ReactNode, useState } from "react";
+import Link from "next/link";
 
 
 const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     
     const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
+    const navItems = [
+        { label: "Add New",   icon: "/new.png", href: "/add-new"   },
+        { label: "Archive",  icon: "/archive.png", href: "/archive"  },
+        { label: "Folders",   icon: "/folder.png", href: "/folders" },
+        { label: "Trash",     icon: "/trash.png", href: "/trash"},
+    ];
+
     return(
         <section>
             <div className='min-h-screen bg-gray-100'>
-                <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start ">
-                    <div className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative mt-[20px]'>
+                <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start shadow-sm">
+                    <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative mt-[20px]' href='/'>
                         <Image
                             src='/logoNoText.png'
                             alt='logo'
@@ -20,10 +28,10 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                             objectFit="contain" 
                             className='cursor-pointer'
                         />
-                    </div>
+                    </Link>
                   
                     <div className='lg:px-[80px]'>
-                        <h1 >MY NOTES</h1>
+                        <h1 className='text-[24px] lg:text-[38px] font-[500]'>MY NOTES</h1>
                     </div>
                     
                     <div 
@@ -47,9 +55,8 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                 <div className='block lg:flex'>
                     <aside 
                         className={`
-                            fixed inset-y-0 right-0 bg-white h-screen z-50 lg:z-0
-                            w-[250px]                      
-                            transition-transform duration-300 ease-in-out
+                            fixed inset-y-0 right-0 bg-white/95 h-screen z-50 lg:z-0
+                            w-[250px] transition-transform duration-300 ease-in-out shadow-lg                      
                             ${openMobileMenu ? "translate-x-0" : "translate-x-full"}
                             lg:relative lg:translate-x-0 lg:inset-auto lg:w-64 lg:block
                         `}
@@ -61,11 +68,25 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                             </button>
                         </div>
                         <nav className="pl-[60px] pt-[40px]">
-                            <ul className="space-y-4">
-                                <li>Add New</li>
-                                <li>Calendar</li>
-                                <li>Archive</li>
-                                <li>Trash</li>
+                            <ul className="space-y-6">
+                                {navItems.map(({ label, icon, href }) => (
+                                    <li key={href}>
+                                        <Link
+                                            href={href}
+                                            className="flex items-center space-x-3 px-4 py-2 
+                                                    text-gray-900 hover:bg-gray-100 rounded"
+                                        >
+                                            <Image
+                                            src={icon}
+                                            alt={`${label} icon`}
+                                            width={20}
+                                            height={20}
+                                            className="flex-shrink-0"
+                                            />
+                                            <span>{label}</span>
+                                        </Link>
+                                    </li>
+                                ))}
                             </ul>
                         </nav>
                     </aside>
