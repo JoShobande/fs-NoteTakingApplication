@@ -1,9 +1,10 @@
+import Card from "@components/components/Card";
 
 
 export default function Home() {
   return (
     <div className="">
-      <h1>hello from root page</h1>
+      <Card type='folder' backgroundColor='#E8E582'/>
     </div>
   );
 }

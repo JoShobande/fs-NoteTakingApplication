@@ -20,7 +20,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
         <section>
             <div className='min-h-screen bg-gray-100'>
                 <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start shadow-sm">
-                    <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative mt-[20px]' href='/'>
+                    <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative lg:mt-[20px]' href='/'>
                         <Image
                             src='/logoNoText.png'
                             alt='logo'
