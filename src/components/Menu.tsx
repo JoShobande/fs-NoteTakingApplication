@@ -56,7 +56,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                     <aside 
                         className={`
                             fixed inset-y-0 right-0 bg-white/95 h-screen z-50 lg:z-0
-                            w-[250px] transition-transform duration-300 ease-in-out shadow-lg                      
+                            w-[250px]  transition-transform duration-300 ease-in-out shadow-lg                      
                             ${openMobileMenu ? "translate-x-0" : "translate-x-full"}
                             lg:relative lg:translate-x-0 lg:inset-auto lg:w-64 lg:block
                         `}
@@ -67,7 +67,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                                 ✕
                             </button>
                         </div>
-                        <nav className="pl-[60px] pt-[40px]">
+                        <nav className="xl:pl-[60px] pt-[40px]">
                             <ul className="space-y-6">
                                 {navItems.map(({ label, icon, href }) => (
                                     <li key={href}>
@@ -77,11 +77,11 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                                                     text-gray-900 hover:bg-gray-100 rounded"
                                         >
                                             <Image
-                                            src={icon}
-                                            alt={`${label} icon`}
-                                            width={20}
-                                            height={20}
-                                            className="flex-shrink-0"
+                                                src={icon}
+                                                alt={`${label} icon`}
+                                                width={20}
+                                                height={20}
+                                                className="flex-shrink-0"
                                             />
                                             <span>{label}</span>
                                         </Link>
@@ -90,9 +90,9 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                             </ul>
                         </nav>
                     </aside>
-                    <div className="flex-1 -ml-4 -mt-2 z-10">
+                    <div className="flex-1 lg:-ml-4 -mt-2 z-10">
                         <div className="rounded-tl-[30px] overflow-hidden">
-                            <main className="px-8 py-6 bg-gray-200">
+                            <main className="px-8 py-6 bg-gray-200 ">
                                 {currentPage}
                             </main>
                         </div>
