@@ -77,9 +77,9 @@ export default function Home() {
            <NewItem type='folder'/>
         </div>
       </div>
-      {/* <div className='lg:mt-[50px] flex flex-col items-center lg:block'>
+      <div className='lg:mt-[50px] flex flex-col items-center lg:block'>
         <h1 className='hidden lg:block text-[25px] mb-[20px] font-[500]'>My Notes</h1>
-        <div className=' lg:flex lg:space-x-8 items-center '>
+        <div className=' lg:flex lg:space-x-8 items-center flex-wrap '>
            {
              notes.map((note, index)=>{
                return(
@@ -96,7 +96,7 @@ export default function Home() {
              })
            } 
         </div>
-      </div> */}
+      </div>
     </section>
   );
 }
