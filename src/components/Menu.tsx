@@ -18,7 +18,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
 
     return(
         <section>
-            <div className='min-h-screen bg-gray-100'>
+            <div className='bg-gray-100'>
                 <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start shadow-sm">
                     <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative lg:mt-[20px]' href='/'>
                         <Image
@@ -55,7 +55,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                 <div className='block lg:flex'>
                     <aside 
                         className={`
-                            fixed inset-y-0 right-0 bg-white/95 h-screen z-50 lg:z-0
+                            fixed inset-y-0 right-0 bg-white/95  z-50 lg:z-0
                             w-[250px]  transition-transform duration-300 ease-in-out shadow-lg                      
                             ${openMobileMenu ? "translate-x-0" : "translate-x-full"}
                             lg:relative lg:translate-x-0 lg:inset-auto lg:w-64 lg:block
@@ -92,7 +92,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                     </aside>
                     <div className="flex-1 lg:-ml-4 -mt-2 z-10">
                         <div className="rounded-tl-[30px] overflow-hidden">
-                            <main className="px-8 py-6 bg-gray-200 ">
+                            <main className="px-4 lg:px-8 py-6 bg-gray-200 ">
                                 {currentPage}
                             </main>
                         </div>

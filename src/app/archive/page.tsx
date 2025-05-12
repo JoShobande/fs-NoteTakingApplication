@@ -122,6 +122,7 @@ export default function Archive() {
   
     return (
      <section>
+       <h1 className='text-[25px] mb-[20px] font-[500]'>Archive</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             {
                 archivedNotes.map((archive, index)=>{

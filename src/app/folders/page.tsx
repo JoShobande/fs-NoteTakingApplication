@@ -92,6 +92,7 @@ export default function Folders() {
   
     return (
      <section>
+       <h1 className='text-[25px] mb-[20px] font-[500]'>Folders</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           {
             folders.map((folder, index)=>{
