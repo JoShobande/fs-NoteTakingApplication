@@ -10,10 +10,10 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
     const navItems = [
-        { label: "Add New",   icon: "/new.png", href: "/add-new"   },
-        { label: "Archive",  icon: "/archive.png", href: "/archive"  },
-        { label: "Folders",   icon: "/folder.png", href: "/folders" },
-        { label: "Trash",     icon: "/trash.png", href: "/trash"},
+        { label: "Add New",   icon: "/new.png", href: "add-new"   },
+        { label: "Archive",  icon: "/archive.png", href: "archive"  },
+        { label: "Folders",   icon: "/folder.png", href: "folders" },
+        { label: "Trash",     icon: "/trash.png", href: "trash"},
     ];
 
     return(

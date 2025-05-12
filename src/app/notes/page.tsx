@@ -57,7 +57,46 @@ export default function Home() {
 
   return (
     <section className="">
-      sign in
+      <div className='hidden lg:block'>
+        <h1 className='text-[25px] mb-[20px] font-[500]'>Recent Folders</h1>
+        <div className='flex space-x-8 items-center'>
+           {
+             folders.map((folder, index)=>{
+               return(
+                 <Card
+                    type='folder'
+                    backgroundColor={folder.bgColor}
+                    name={folder.name}
+                    folderIconColor={folder.folderIconColor}
+                    date={folder.date}
+                    key={index}
+                 />
+               )
+             })
+           }
+           <NewItem type='folder'/>
+        </div>
+      </div>
+      <div className='lg:mt-[50px] flex flex-col items-center lg:block'>
+        <h1 className='hidden lg:block text-[25px] mb-[20px] font-[500]'>My Notes</h1>
+        <div className=' lg:flex lg:space-x-8 items-center flex-wrap '>
+           {
+             notes.map((note, index)=>{
+               return(
+                 <Card
+                    type='note'
+                    backgroundColor={note.bgColor}
+                    name={note.name}
+                    noteDescription={note.description}
+                    date={note.date}
+                    key={index}
+                    className='mb-4'
+                 />
+               )
+             })
+           } 
+        </div>
+      </div>
     </section>
   );
 }
