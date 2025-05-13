@@ -10,17 +10,17 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
     const navItems = [
-        { label: "Add New",   icon: "/new.png", href: "add-new"   },
-        { label: "Archive",  icon: "/archive.png", href: "archive"  },
-        { label: "Folders",   icon: "/folder.png", href: "folders" },
-        { label: "Trash",     icon: "/trash.png", href: "trash"},
+        { label: "Add New",   icon: "/new.png", href: "/notes/add-new"   },
+        { label: "Archive",  icon: "/archive.png", href: "/notes/archive"  },
+        { label: "Folders",   icon: "/folder.png", href: "/notes/folders" },
+        { label: "Trash",     icon: "/trash.png", href: "/notes/trash"},
     ];
 
     return(
         <section>
             <div className='bg-gray-100'>
                 <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start shadow-sm">
-                    <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative lg:mt-[20px]' href='/'>
+                    <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative lg:mt-[20px]' href='/notes'>
                         <Image
                             src='/logoNoText.png'
                             alt='logo'

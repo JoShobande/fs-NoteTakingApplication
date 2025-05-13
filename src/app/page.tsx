@@ -3,61 +3,11 @@ import NewItem from "@components/components/NewItem";
 
 export default function Home() {
 
-  const folders = [
-    {
-      name:'Movie Review',
-      date: '12/12/2021',
-      bgColor: 'bg-[#DEF0FF]',
-      folderIconColor:'bg-[#9398FB]',
-    },
-    {
-      name:'Class Notes',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FFD6D5]',
-      folderIconColor: 'bg-[#C1774E]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-  ] 
-  
-  const notes = [
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#E8E582]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#EFAAAA]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#6CB5DF]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#6CB5DF]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-  ]  
+ 
 
   return (
     <section className="">
-      sign in
+      entery page
     </section>
   );
 }
