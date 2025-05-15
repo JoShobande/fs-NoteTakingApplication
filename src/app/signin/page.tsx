@@ -35,7 +35,6 @@ export default function SignInPage() {
         return;
       }
       console.log('logged in')
-      // on success, you can redirect:
       // router.push("/notes");
     } catch (err) {
       console.error(err);
