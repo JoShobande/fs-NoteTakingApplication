@@ -1,8 +1,97 @@
+// app/notes/new/page.tsx
+"use client";
 
- 
-export default function AddNew() {
-  
-    return (
-     <div>add</div>
-    )
-  }
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+const colorOptions = [
+  { name: "yellow",   value: "yellow",   bg: "bg-[#E8E582]"   },
+  { name: "Pink",  value: "pink",  bg: "bg-[#EFAAAA]"  },
+  { name: "Blue", value: "blue", bg: "bg-[#6CB5DF]" },
+];
+
+export default function NewNotePage() {
+  const router = useRouter();
+  const [title, setTitle]       = useState("");
+  const [content, setContent]   = useState("");
+  const [color, setColor]       = useState(colorOptions[0].value);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // auto‐resize textarea
+  // useEffect(() => {
+  //   const ta = textareaRef.current;
+  //   if (ta) {
+  //     ta.style.height = "0px";
+  //     ta.style.height = ta.scrollHeight + "px";
+  //   }
+  // }, [content]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: POST to your API then router.push("/notes")
+    console.log({ title, content, color });
+  };
+
+  // find the bg class for current color
+  const currentBg = colorOptions.find((o) => o.value === color)?.bg ?? "";
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={`
+        flex flex-col min-h-screen p-6 
+        ${currentBg} 
+        transition-colors duration-200
+      `}
+    >
+
+      <div className="flex items-center space-x-4 mb-4">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          required
+          className="flex-1 text-2xl font-semibold text-gray-900 
+                     border-none focus:outline-none bg-transparent"
+        />
+
+        <div className="flex space-x-2">
+          {colorOptions.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setColor(opt.value)}
+              aria-label={opt.name}
+              className={`
+                w-6 h-6 rounded-full
+                ${opt.bg.replace("-100","-500")}      /* solid circle */
+                ${color === opt.value ? "ring-2 ring-offset-2 ring-gray-700" : ""}
+              `}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Content area: fills remaining space */}
+      <textarea
+        // ref={textareaRef}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Start writing your note..."
+        required
+        className="flex-1 w-full resize-none border-none focus:outline-none 
+                   bg-transparent text-gray-800 text-base leading-6"
+      />
+
+      {/* Save button */}
+      <button
+        type="submit"
+        className="mt-4 self-end px-6 py-2 bg-blue-600 text-white rounded-lg 
+                   hover:bg-blue-700 transition"
+      >
+        Save
+      </button>
+    </form>
+  );
+}
