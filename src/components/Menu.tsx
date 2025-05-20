@@ -3,11 +3,22 @@
 import Image from "next/image";
 import { ReactNode, useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 
 const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     
     const [openMobileMenu, setOpenMobileMenu] = useState(false)
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+      // This will clear the NextAuth session cookie, then redirect
+      await signOut({
+        redirect: false,          // we’ll handle the redirect manually
+      });
+      router.push("/signin");     // send the user back to your sign-in page
+    };
 
     const navItems = [
         { label: "Add New",   icon: "/new.png", href: "/notes/add-new"   },
@@ -87,6 +98,7 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                                         </Link>
                                     </li>
                                 ))}
+                                <li onClick={handleSignOut} className='cursor-pointer'>Logout</li>
                             </ul>
                         </nav>
                     </aside>

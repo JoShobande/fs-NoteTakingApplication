@@ -7,6 +7,7 @@ import { authOptions } from "./api/auth/[...nextauth]/options";
 export default async function RootPage() {
   // 1. Server‐side session check
   const session = await getServerSession(authOptions);
+  console.log(session)
 
   // 2. If no session, show the Sign In page UI
   if (!session) {

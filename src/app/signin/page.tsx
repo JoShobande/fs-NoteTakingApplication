@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,8 @@ export default function SignInPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+
+  const router = useRouter();
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -35,7 +38,7 @@ export default function SignInPage() {
         return;
       }
       console.log('logged in')
-      // router.push("/notes");
+      router.push("/notes");
     } catch (err) {
       console.error(err);
       setApiError("Something went wrong, please try again later");
