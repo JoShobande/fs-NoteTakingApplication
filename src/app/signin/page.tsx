@@ -37,7 +37,6 @@ export default function SignInPage() {
         setApiError(res.error || "Invalid credentials");
         return;
       }
-      console.log('logged in')
       router.push("/notes");
     } catch (err) {
       console.error(err);

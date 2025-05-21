@@ -1,5 +1,5 @@
 import Image from "next/image"
-
+import { useRouter } from "next/navigation";
 
 interface cardProps{
     type: 'folder' | 'note'
@@ -10,11 +10,30 @@ interface cardProps{
     noteDescription?: string,
     time?:string
     className?:string
+    pageRedirect?: string
 }
 
-const Card:React.FC<cardProps> = ({type, backgroundColor, folderIconColor, className}) => {
+const Card:React.FC<cardProps> = ({
+    type, 
+    backgroundColor, 
+    folderIconColor, 
+    className, 
+    name,
+    date,
+    noteDescription,
+    pageRedirect
+}) => {
+    const router = useRouter();
+
+    const handleRedirect = () => {
+       pageRedirect && router.push(pageRedirect);
+    }
+
     return(
-        <div className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '}  rounded-[20px] p-[20px] cursor-[pointer] ${className}`}>
+        <div 
+            className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '}  rounded-[20px] p-[20px] cursor-[pointer] ${className}`}
+            onClick={handleRedirect}
+        >
             {
                 type == 'folder'
                 ?
@@ -38,15 +57,15 @@ const Card:React.FC<cardProps> = ({type, backgroundColor, folderIconColor, class
                         </div>
                        
                         <div className='mt-[20px] text-[24px] font-[600]'>
-                            <h3 className='mb-0 pb-0 text-[20px]'>Movie Review</h3>
-                            <span className='text-[12px]'>12/12/2021</span>
+                            <h3 className='mb-0 pb-0 text-[20px]'>{name}</h3>
+                            <span className='text-[12px]'>{date}</span>
                         </div>
                     </div>
                 :
                 <div>
-                    <span className='text-[12px]'>12/12/2021</span>
+                    <span className='text-[12px]'>{date}</span>
                     <div className='flex justify-between items-center'>
-                        <h3 className='text-[20px] font-[500]'>Mid term exam</h3>
+                        <h3 className='text-[20px] font-[500]'>{name}</h3>
                         <div className='flex space-x-1 cursor-pointer'>
                                 <div className="w-1 h-1 bg-[black] rounded-full"></div>
                                 <div className="w-1 h-1 bg-[black] rounded-full"></div>
@@ -55,7 +74,7 @@ const Card:React.FC<cardProps> = ({type, backgroundColor, folderIconColor, class
                     </div>
                     <hr className='mt-[15px] mb-[20px]'/>
                     <div>
-                        <p className='font-[300] text-[15px]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti facere explicabo totam aspernatur asperiores atque quos vel ea, dicta id!</p>
+                        <p className='font-[300] text-[15px]'>{noteDescription}</p>
                     </div>
                     <div className='mt-[30px] flex items-center'>
                         <Image
