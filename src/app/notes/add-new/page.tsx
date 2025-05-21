@@ -13,8 +13,8 @@ const colorOptions = [
 export default function NewNotePage() {
   const router = useRouter();
   const [title, setTitle]       = useState("");
-  const [content, setContent]   = useState("");
-  const [color, setColor]       = useState(colorOptions[0].value);
+  const [noteContent, setNoteContent]   = useState("");
+  const [themeColor, setThemeColor]       = useState(colorOptions[0].value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // auto‐resize textarea
@@ -29,11 +29,17 @@ export default function NewNotePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: POST to your API then router.push("/notes")
-    console.log({ title, content, color });
+    const res = await fetch("/api/notes/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, noteContent, themeColor }),
+    });
+    console.log(res)
+    // console.log({ title, content, color });
   };
 
   // find the bg class for current color
-  const currentBg = colorOptions.find((o) => o.value === color)?.bg ?? "";
+  const currentBg = colorOptions.find((o) => o.value === themeColor)?.bg ?? "";
 
   return (
     <form
@@ -61,12 +67,12 @@ export default function NewNotePage() {
             <button
               key={opt.value}
               type="button"
-              onClick={() => setColor(opt.value)}
+              onClick={() => setThemeColor(opt.value)}
               aria-label={opt.name}
               className={`
                 w-6 h-6 rounded-full
                 ${opt.bg.replace("-100","-500")}      /* solid circle */
-                ${color === opt.value ? "ring-2 ring-offset-2 ring-gray-700" : ""}
+                ${themeColor === opt.value ? "ring-2 ring-offset-2 ring-gray-700" : ""}
               `}
             />
           ))}
@@ -76,8 +82,8 @@ export default function NewNotePage() {
       {/* Content area: fills remaining space */}
       <textarea
         // ref={textareaRef}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={noteContent}
+        onChange={(e) => setNoteContent(e.target.value)}
         placeholder="Start writing your note..."
         required
         className="flex-1 w-full resize-none border-none focus:outline-none 
