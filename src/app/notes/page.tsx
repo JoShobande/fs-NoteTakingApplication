@@ -3,6 +3,7 @@
 import Card from "@components/components/Card";
 import NewItem from "@components/components/NewItem";
 import { useEffect, useState } from "react";
+import { Loader2 } from 'lucide-react' 
 
 
 type Note = {
@@ -15,16 +16,27 @@ type Note = {
 
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const[loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetch("/api/notes/all")
-      .then((res) => {
-        if (!res.ok) throw new Error("Not authorized");
-        return res.json();
-      })
-      .then(setNotes)
-      .catch(console.error);
-  }, []);
+    const fetchNotes = async () => {
+      setLoading(true)
+      // setError(null)
+      try {
+        const res = await fetch('/api/notes/all')
+        if (!res.ok) throw new Error('Not authorized')
+        const data = await res.json()
+        setNotes(data)
+      } catch (err: any) {
+        console.error(err)
+        // setError(err.message || 'Something went wrong')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNotes()
+  }, [])
 
   const folders = [
     {
@@ -46,37 +58,15 @@ export default function Home() {
       folderIconColor:'bg-[#E8E582]',
     },
   ] 
-  
-  // const notes = [
-  //   {
-  //     name:'Mid term exam',
-  //     date: '12/12/2021',
-  //     bgColor: 'bg-[#E8E582]',
-  //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-  //     time: '10:30 PM Monday'
-  //   },
-  //   {
-  //     name:'Mid term exam',
-  //     date: '12/12/2021',
-  //     bgColor: 'bg-[#EFAAAA]',
-  //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-  //     time: '10:30 PM Monday'
-  //   },
-  //   {
-  //     name:'Mid term exam',
-  //     date: '12/12/2021',
-  //     bgColor: 'bg-[#6CB5DF]',
-  //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-  //     time: '10:30 PM Monday'
-  //   },
-  //   {
-  //     name:'Mid term exam',
-  //     date: '12/12/2021',
-  //     bgColor: 'bg-[#6CB5DF]',
-  //     description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-  //     time: '10:30 PM Monday'
-  //   },
-  // ]  
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 ">
+        <Loader2 className="animate-spin h-[80px] w-[80px] mr-2 text-blue-600" />
+        <span>Loading notes…</span>
+      </div>
+    )
+  }
 
   return (
     <section className="">

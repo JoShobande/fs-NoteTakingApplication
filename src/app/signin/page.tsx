@@ -45,8 +45,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="relative grid place-items-center   bg-gray-100 px-4">
-      {/* Modal */}
+    <div className="grid place-items-center bg-gray-100 h-[800px] xl:h-screen px-4">
       {apiError && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full space-y-4">
@@ -62,7 +61,6 @@ export default function SignInPage() {
         </div>
       )}
 
-      {/* Sign-In Form */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-semibold text-gray-900 mb-6 text-center">
           Sign In

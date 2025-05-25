@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation";
+import dayjs from 'dayjs';
 
 interface cardProps{
     type: 'folder' | 'note'
@@ -31,7 +32,7 @@ const Card:React.FC<cardProps> = ({
 
     return(
         <div 
-            className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '}  rounded-[20px] p-[20px] cursor-[pointer] ${className}`}
+            className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '} relative rounded-[20px] p-[20px] cursor-[pointer] ${className}`}
             onClick={handleRedirect}
         >
             {
@@ -57,26 +58,26 @@ const Card:React.FC<cardProps> = ({
                         </div>
                        
                         <div className='mt-[20px] text-[24px] font-[600]'>
-                            <h3 className='mb-0 pb-0 text-[20px]'>{name}</h3>
+                            <h3 className='mb-0 pb-0 text-[20px] truncate'>{name}</h3>
                             <span className='text-[12px]'>{date}</span>
                         </div>
                     </div>
                 :
                 <div>
-                    <span className='text-[12px]'>{date}</span>
+                    <span className='text-[12px]'>{dayjs(date).format('MM/DD/YYYY')}</span>
                     <div className='flex justify-between items-center'>
-                        <h3 className='text-[20px] font-[500]'>{name}</h3>
+                        <h3 className='text-[20px] font-[500] w-[70%] truncate'>{name}</h3>
                         <div className='flex space-x-1 cursor-pointer'>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
+                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
+                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
+                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
                         </div>
                     </div>
                     <hr className='mt-[15px] mb-[20px]'/>
-                    <div>
-                        <p className='font-[300] text-[15px]'>{noteDescription}</p>
+                    <div className='flex-1 overflow-auto'>
+                        <p className='font-[300] text-[15px] w-full break-words'>{noteDescription?.slice(0,120)}</p>
                     </div>
-                    <div className='mt-[30px] flex items-center'>
+                    <div className='mt-[30px] flex items-center absolute bottom-[20px]'>
                         <Image
                             src={'/clock.png'}
                             alt='edit note'
@@ -84,7 +85,7 @@ const Card:React.FC<cardProps> = ({
                             height={24}
                             className='cursor-pointer'
                         />
-                        <p className='ml-[5px] text-[12px]'>10:30 PM Monday</p>
+                        <p className='ml-[5px] text-[12px]'>{dayjs(date).format('hh:ma, dddd')}</p>
                     </div>
                 </div>
             }  
