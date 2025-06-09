@@ -83,6 +83,7 @@ export default function Home() {
                     folderIconColor={folder.folderIconColor}
                     date={folder.date}
                     key={index}
+                    pageRedirect={''}
                  />
                )
              })

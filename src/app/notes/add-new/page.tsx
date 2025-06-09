@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import prismadb from '../../../lib/prismadb'
 
 const colorOptions = [
   { name: "yellow",   value: "yellow",   bg: "bg-[#E8E582]"   },
@@ -11,11 +12,12 @@ const colorOptions = [
   { name: "Blue", value: "blue", bg: "bg-[#6CB5DF]" },
 ];
 
-export default function NewNotePage() {
-  // const router = useRouter();
-  const [title, setTitle]       = useState("");
-  const [noteContent, setNoteContent]   = useState("");
-  const [themeColor, setThemeColor]       = useState(colorOptions[0].bg);
+export default function NewNotePage({  searchParams}:{  searchParams: { id?: string };}) {
+  const editId = searchParams.id
+
+  const [title, setTitle] = useState("");
+  const [noteContent, setNoteContent] = useState("");
+  const [themeColor, setThemeColor]  = useState(colorOptions[0].bg);
   const [loading, setLoading] = useState(false)
   // const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -28,6 +30,22 @@ export default function NewNotePage() {
   //   }
   // }, [content]);
 
+  const handleGetNoteToBeEdited =  async() => {
+    const note = await prismadb.notes.findUnique({
+      where: { id: editId },
+    });
+    setTitle(note?.title || '')
+    setNoteContent(note?.noteContent || '')
+    setThemeColor(note?.themeColor || '')
+  }
+
+  useEffect(()=>{
+    if(editId){
+      handleGetNoteToBeEdited()
+    }
+  },[])
+
+  
   
 
   const handleSubmit = async (e: React.FormEvent) => {

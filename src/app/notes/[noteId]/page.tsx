@@ -1,9 +1,13 @@
+// 'use client'
+
 // app/notes/[noteId]/page.tsx
 import { Edit2, Archive, Trash2 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/options";
 import prismadb from "../../../lib/prismadb";
-import { redirect } from "next/navigation";
+
+import Link from "next/link";
+// import { useRouter } from "next/navigation";
 
 // const bgMap: Record<string,string> = {
 //   blue:   "bg-blue-100",
@@ -15,13 +19,21 @@ import { redirect } from "next/navigation";
 
 export default async function NoteDetailPage({
   params,
+
 }: {
     params: Promise<{ noteId: string }>;
+  
 }) {
   // Guard & fetch
 //   const session = await getServerSession(authOptions);
 //   if (!session?.user?.id) redirect("/signin");
     const { noteId } = await params;
+
+    // let router = useRouter()
+
+    // const handleRedirectToEdit = () =>{
+    //   router.push('/notes/add-new/123')
+    // }
 
   const note = await prismadb.notes.findUnique({
     where: { id: noteId },
@@ -36,13 +48,14 @@ export default async function NoteDetailPage({
     <div className={`${note.themeColor} min-h-screen p-6 flex flex-col`}>
       {/* Actions */}
       <div className="flex justify-end space-x-4 mb-4">
-        <button
+        <Link
           aria-label="Edit note"
-        //   onClick={() => redirect(`/notes/${note.id}/edit`)}
+          href={`/notes/add-new?id=${note.id}`}
+          // onClick={handleRedirectToEdit}
           className="p-2 rounded hover:bg-white/30"
         >
           <Edit2 size={20} />
-        </button>
+        </Link>
         <button
           aria-label="Archive note"
         //   onClick={() => {/* archive handler */}}

@@ -1,6 +1,9 @@
+'use client'
+
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 import dayjs from 'dayjs';
+import Link from "next/link";
 
 interface cardProps{
     type: 'folder' | 'note'
@@ -11,7 +14,7 @@ interface cardProps{
     noteDescription?: string,
     time?:string
     className?:string
-    pageRedirect?: string
+    pageRedirect: string
 }
 
 const Card:React.FC<cardProps> = ({
@@ -31,9 +34,10 @@ const Card:React.FC<cardProps> = ({
     }
 
     return(
-        <div 
+        <Link
             className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '} relative rounded-[20px] p-[20px] cursor-[pointer] ${className}`}
-            onClick={handleRedirect}
+            // onClick={handleRedirect}
+            href={pageRedirect}
         >
             {
                 type == 'folder'
@@ -89,7 +93,7 @@ const Card:React.FC<cardProps> = ({
                     </div>
                 </div>
             }  
-        </div>
+        </Link>
     )
 }
 
