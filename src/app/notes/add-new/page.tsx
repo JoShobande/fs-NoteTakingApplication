@@ -1,10 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import prismadb from '../../../lib/prismadb'
+import { useSearchParams } from "next/navigation";
+
+interface NoteProps{
+  title:string,
+  noteContent:string,
+  themeColor:string
+}
 
 const colorOptions = [
   { name: "yellow",   value: "yellow",   bg: "bg-[#E8E582]"   },
@@ -12,43 +17,35 @@ const colorOptions = [
   { name: "Blue", value: "blue", bg: "bg-[#6CB5DF]" },
 ];
 
-export default function NewNotePage({  searchParams}:{  searchParams: { id?: string };}) {
-  const editId = searchParams.id
-
+export default function NewNotePage() {
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("id"); 
+ 
   const [title, setTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [themeColor, setThemeColor]  = useState(colorOptions[0].bg);
   const [loading, setLoading] = useState(false)
-  // const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // auto‐resize textarea
-  // useEffect(() => {
-  //   const ta = textareaRef.current;
-  //   if (ta) {
-  //     ta.style.height = "0px";
-  //     ta.style.height = ta.scrollHeight + "px";
-  //   }
-  // }, [content]);
+  const [loadingNoteDetails , setLoadingNoteDetails] = useState(false)
+
 
   const handleGetNoteToBeEdited =  async() => {
-    const note = await prismadb.notes.findUnique({
-      where: { id: editId },
-    });
-    setTitle(note?.title || '')
-    setNoteContent(note?.noteContent || '')
-    setThemeColor(note?.themeColor || '')
+    setLoadingNoteDetails(true)
+    try {
+      const res = await fetch(`/api/notes/${editId}`)
+      if (!res.ok) throw new Error('Not authorized')
+      const data:NoteProps = await res.json()
+      setTitle(data.title)
+      setNoteContent(data.noteContent)
+      setThemeColor(data.themeColor)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingNoteDetails(false)
+    }
   }
 
-  useEffect(()=>{
-    if(editId){
-      handleGetNoteToBeEdited()
-    }
-  },[])
-
-  
-  
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCreateNewNote = async(e: React.FormEvent) => {
     e.preventDefault();
     if(title === '' || noteContent === ''){
       return
@@ -67,10 +64,42 @@ export default function NewNotePage({  searchParams}:{  searchParams: { id?: str
     }finally{
       setLoading(false)
     }
+  }
+
+  const handleEditExistingNote = async(e: React.FormEvent) => {
+    e.preventDefault();
+    if(title === '' || noteContent === ''){
+      return
+    }
+    try{
+      setLoading(true)
+      const res = await fetch(`/api/notes/edit/${editId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, noteContent, themeColor }),
+      });
+      toast.success('Successfully edited')
+      console.log(res)
+    }catch(error){
+      console.log(error)
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    editId ? handleEditExistingNote(e) : handleCreateNewNote(e)
+    
   };
 
   // find the bg class for current color
   const currentBg = colorOptions.find((o) => o.bg === themeColor)?.bg ?? "";
+
+  useEffect(()=>{
+    if(editId){
+      handleGetNoteToBeEdited()
+    }
+  },[editId])
 
   return (
     <form
@@ -112,7 +141,6 @@ export default function NewNotePage({  searchParams}:{  searchParams: { id?: str
 
   
       <textarea
-        // ref={textareaRef}
         value={noteContent}
         onChange={(e) => setNoteContent(e.target.value)}
         placeholder="Start writing your note..."
