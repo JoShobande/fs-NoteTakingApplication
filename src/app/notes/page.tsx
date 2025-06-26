@@ -23,8 +23,8 @@ export default function Home() {
       setLoading(true)
       // setError(null)
       try {
-        const res = await fetch('/api/notes/all')
-        if (!res.ok) throw new Error('Not authorized')
+        const res = await fetch('/api/notes', {method:'GET'})
+        // if (!res.ok) throw new Error('Not authorized')
         const data = await res.json()
         setNotes(data)
       } catch (err: any) {
@@ -95,7 +95,7 @@ export default function Home() {
         <h1 className='hidden lg:block text-[25px] mb-[20px] font-[500]'>My Notes</h1>
         <div className=' lg:flex lg:space-x-8 items-center flex-wrap '>
            {
-             notes.map((note, index)=>{
+             notes?.map((note, index)=>{
                return(
                  <Card
                     type='note'

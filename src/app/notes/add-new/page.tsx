@@ -5,10 +5,11 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSearchParams } from "next/navigation";
 
-interface NoteProps{
+export interface NoteProps{
   title:string,
   noteContent:string,
-  themeColor:string
+  themeColor:string,
+  id:string
 }
 
 const colorOptions = [
@@ -156,9 +157,9 @@ export default function NewNotePage() {
         disabled={loading}
       >
          {loading ? (
-          <Loader2 className="animate-spin mr-2 h-5 w-5" />
+          <Loader2 className="animate-spin mr-2 h-5 w-5"/>
         ) :
-        'Save'
+        editId ? 'Save Changes' : 'Save'
       }
         
       </button>
