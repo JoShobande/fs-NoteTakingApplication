@@ -232,7 +232,7 @@ function CreateFolder({
         body: JSON.stringify({
           name,
           themeColor,
-          noteIds: selectedNotes,
+          notes: selectedNotes,
         }),
       });
       if (!res.ok) throw new Error("Failed to create folder");
