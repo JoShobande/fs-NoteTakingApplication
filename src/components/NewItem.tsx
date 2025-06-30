@@ -1,12 +1,14 @@
 import Image from "next/image";
+import { SetStateAction } from "react";
 
 interface itemProps{
     type: 'note' | 'folder'
+    openModal: () => void
 }
 
-const NewItem = ({type}: itemProps) =>{
+const NewItem = ({type, openModal}: itemProps) =>{
     return(
-        <div className='border border-dashed h-[100px] w-[100px] rounded-[20px] grid place-items-center cursor-pointer'>
+        <div className='border border-dashed h-[100px] w-[100px] rounded-[20px] grid place-items-center cursor-pointer' onClick={openModal}>
             <div  className="grid gap-2 justify-items-center">
                 {
                     type === 'folder'

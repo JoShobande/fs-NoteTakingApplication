@@ -27,6 +27,7 @@ model User{
   accounts Account[]
 
   notes Notes[] @relation("UserNotes")
+  folders Folder[]  @relation("UserFolders") 
 }
 
 model Account{
@@ -76,13 +77,34 @@ model Notes{
   userId String @db.ObjectId
   trash Boolean @default(false)
   archived Boolean @default(false) 
+  folderId  String? @db.ObjectId   
 
   deletedAt DateTime? 
 
   user User @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
+  folder       Folder?   @relation("FolderNotes", fields: [folderId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@map("notes") 
+  @@index([folderId])
 }
+
+
+
+model Folder {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  themeColor String
+  userId     String    @db.ObjectId
+  user       User      @relation("UserFolders", fields: [userId], references: [id], onDelete: Cascade)
+  notes      Notes[]   @relation("FolderNotes")  // 1 folder → many notes
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("folders")
+  @@index([userId])
+}
+
 
 

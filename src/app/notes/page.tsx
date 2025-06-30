@@ -2,10 +2,11 @@
 
 import Card from "@components/components/Card";
 import NewItem from "@components/components/NewItem";
-import { useEffect, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
 import { Loader2 } from 'lucide-react' 
 import { useRouter} from "next/navigation"
 import { toast } from "sonner";
+import Modal from '../../components/Modal'
 
 
 type Note = {
@@ -19,6 +20,8 @@ type Note = {
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const[loading, setLoading] = useState(false)
+
+  const [openFolderModal, setOpenFolderModal] = useState(false)
 
 
   const fetchNotes = async () => {
@@ -88,7 +91,11 @@ export default function Home() {
                )
              })
            }
-           <NewItem type='folder'/>
+           <NewItem 
+              type='folder'
+              openModal={()=>setOpenFolderModal(true)}
+
+           />
         </div>
       </div>
       <div className='lg:mt-[50px] flex flex-col items-center lg:block'>
@@ -113,10 +120,17 @@ export default function Home() {
            } 
         </div>
       </div>
+      {
+        openFolderModal &&
+        <Modal
+          title='Create Folder'
+          children={<CreateFolder notes={notes} openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal}/>}
+          onClose={()=>setOpenFolderModal(false)}
+        />
+      }
     </section>
   );
 }
-
 
 const MenuOptions = ({id, refetchNotes}:{id:string, refetchNotes:() => Promise<void>}) => {
   const router = useRouter()
@@ -156,11 +170,164 @@ const MenuOptions = ({id, refetchNotes}:{id:string, refetchNotes:() => Promise<v
 
   return(
     <div className='p-[15px]'>
-        <ul>
-            <li className='p-2' onClick={handleEditNote}>Edit</li>
-            <li className='p-2' onClick={handleArchiveNote}>{loadingArchiving ? 'wait...' : 'Archive'}</li>
-            <li className='p-2' onClick={handleDeleteNote}>{loadingDelete ? 'wait...' : 'Delete'}</li>
-        </ul>
+      <ul>
+          <li className='p-2' onClick={handleEditNote}>Edit</li>
+          <li className='p-2' onClick={handleArchiveNote}>{loadingArchiving ? 'wait...' : 'Archive'}</li>
+          <li className='p-2' onClick={handleDeleteNote}>{loadingDelete ? 'wait...' : 'Delete'}</li>
+      </ul>
     </div>
   )
+}
+
+
+interface NoteOption {
+  id: string;
+  title: string;
+}
+
+interface CreateFolderModalProps {
+  notes: NoteOption[];
+  openFolderModal: boolean
+  setOpenFolderModal: Dispatch<SetStateAction<boolean>>
+}
+
+function CreateFolder({
+  notes,
+  openFolderModal,
+  setOpenFolderModal
+}: CreateFolderModalProps) {
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const colorOptions = [
+    { name: "blue", value: "bg-[#DEF0FF]", bg: "bg-[#DEF0FF]" },
+    { name: "Pink", value: "bg-[#FFD6D5]", bg: "bg-[#FFD6D5]" },
+    { name: "Blue", value: "bg-[#FEFBEB]", bg: "bg-[#FEFBEB]" },
+  ];
+  const [themeColor, setThemeColor] = useState(colorOptions[0].value);
+  const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Close on ESC
+  // useEffect(() => {
+  //   function onKey(e: KeyboardEvent) {
+  //     if (e.key === "Escape") onClose();
+  //   }
+  //   if (open) document.addEventListener("keydown", onKey);
+  //   return () => document.removeEventListener("keydown", onKey);
+  // }, [open, onClose]);
+
+  // if (!open) return null;
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      toast.error("Folder name is required");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/folders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          themeColor,
+          noteIds: selectedNotes,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create folder");
+      toast.success("Folder created");
+      setOpenFolderModal(false)
+      router.refresh();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Could not save folder");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <form
+        onSubmit={handleSubmit}
+        // className="relative bg-white rounded-2xl shadow-lg w-full max-w-lg p-6"
+      >
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Folder Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Class Notes"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <span className="block mb-1 font-medium mb-2 mt-6">Folder Theme Color</span>
+          <div className="flex space-x-2">
+            {colorOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setThemeColor(opt.value)}
+                aria-label={opt.name}
+                className={`
+                  w-8 h-8 rounded-full
+                  ${opt.bg}
+                  ${themeColor === opt.value ? "ring-2 ring-offset-2 ring-gray-700" : ""}
+                `}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-6 mt-6">
+          <label className="block mb-1 font-medium">Select Note(s)</label>
+          <select
+            multiple
+            value={selectedNotes}
+            onChange={(e) =>
+              setSelectedNotes(
+                Array.from(e.target.selectedOptions, (o) => o.value)
+              )
+            }
+            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {notes.map((n) => (
+              <option key={n.id} value={n.id}>
+                {n.title}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-gray-500">
+            Hold Shift or Ctrl/Cmd to select multiple
+          </p>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            onClick={()=>setOpenFolderModal(false)}
+            className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-6 py-2 rounded-lg text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {loading ? "Saving…" : "Create"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
