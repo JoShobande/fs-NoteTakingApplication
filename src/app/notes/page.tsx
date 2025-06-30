@@ -4,6 +4,8 @@ import Card from "@components/components/Card";
 import NewItem from "@components/components/NewItem";
 import { useEffect, useState } from "react";
 import { Loader2 } from 'lucide-react' 
+import { useRouter} from "next/navigation"
+import { toast } from "sonner";
 
 
 type Note = {
@@ -18,24 +20,22 @@ export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const[loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      setLoading(true)
-      // setError(null)
-      try {
-        const res = await fetch('/api/notes', {method:'GET'})
-        // if (!res.ok) throw new Error('Not authorized')
-        const data = await res.json()
-        setNotes(data)
-      } catch (err: any) {
-        console.error(err)
-        // setError(err.message || 'Something went wrong')
-      } finally {
-        setLoading(false)
-      }
-    }
 
-    fetchNotes()
+  const fetchNotes = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/notes', {method:'GET'})
+      const data = await res.json()
+      setNotes(data)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+   fetchNotes()
   }, [])
 
   const folders = [
@@ -106,6 +106,7 @@ export default function Home() {
                     key={index}
                     className='mb-4'
                     pageRedirect={`/notes/${note.id}`}
+                    menuOptions={<MenuOptions id={note.id} refetchNotes={fetchNotes}/>}
                  />
                )
              })
@@ -114,4 +115,52 @@ export default function Home() {
       </div>
     </section>
   );
+}
+
+
+const MenuOptions = ({id, refetchNotes}:{id:string, refetchNotes:() => Promise<void>}) => {
+  const router = useRouter()
+  const [loadingDelete, setLoadingDelete]= useState(false)
+  const [loadingArchiving, setLoadingArchiving]= useState(false)
+
+  const handleEditNote = () => {
+    router.push(`/notes/add-new?id=${id}`)
+  }
+
+  const handleDeleteNote = async() => {
+    try {
+      setLoadingDelete(true);
+      await fetch(`/api/notes/delete/${id}`, { method: "DELETE" });
+      toast.success("Note moved to Trash");
+      refetchNotes()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not delete note");
+    } finally {
+      setLoadingDelete(false);
+    }
+  }
+  const handleArchiveNote = async() => {
+    try {
+      setLoadingArchiving(true);
+      await fetch(`/api/notes/archive/${id}`, { method: "PUT" });
+      toast.success("Note moved to Archive");
+      refetchNotes()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not archive note");
+    } finally {
+      setLoadingArchiving(false);
+    }
+  }
+
+  return(
+    <div className='p-[15px]'>
+        <ul>
+            <li className='p-2' onClick={handleEditNote}>Edit</li>
+            <li className='p-2' onClick={handleArchiveNote}>{loadingArchiving ? 'wait...' : 'Archive'}</li>
+            <li className='p-2' onClick={handleDeleteNote}>{loadingDelete ? 'wait...' : 'Delete'}</li>
+        </ul>
+    </div>
+  )
 }

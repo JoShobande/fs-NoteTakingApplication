@@ -3,7 +3,9 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 import dayjs from 'dayjs';
-import Link from "next/link";
+import { EllipsisVertical } from "lucide-react"; 
+import { ReactNode, useState } from "react";
+import DropDown from '../components/DropDown'
 
 interface cardProps{
     type: 'folder' | 'note'
@@ -15,6 +17,7 @@ interface cardProps{
     time?:string
     className?:string
     pageRedirect: string
+    menuOptions?: ReactNode
 }
 
 const Card:React.FC<cardProps> = ({
@@ -25,24 +28,31 @@ const Card:React.FC<cardProps> = ({
     name,
     date,
     noteDescription,
-    pageRedirect
+    pageRedirect,
+    menuOptions
 }) => {
     const router = useRouter();
+
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const handleRedirect = () => {
        pageRedirect && router.push(pageRedirect);
     }
 
+    const handleOpenCardDropDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
+        setMenuOpen(!menuOpen)
+    }
+
     return(
-        <Link
+        <div
             className={`${backgroundColor} ${type == 'note' ? 'lg:w-[250px] h-[300px]' : 'w-[250px] '} relative rounded-[20px] p-[20px] cursor-[pointer] ${className}`}
-            // onClick={handleRedirect}
-            href={pageRedirect}
+            onClick={handleRedirect}
         >
             {
                 type == 'folder'
                 ?
-                    <div>
+                    <div >
                         <div className='flex justify-between'>
                             <div
                                 className={`${folderIconColor}
@@ -54,11 +64,6 @@ const Card:React.FC<cardProps> = ({
                                     before:bg-[#FEFBEB] before:rounded-bl-[6px]
                                 `}
                             />
-                            <div className='flex space-x-1 cursor-pointer'>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                                <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                            </div>
                         </div>
                        
                         <div className='mt-[20px] text-[24px] font-[600]'>
@@ -67,33 +72,40 @@ const Card:React.FC<cardProps> = ({
                         </div>
                     </div>
                 :
-                <div>
-                    <span className='text-[12px]'>{dayjs(date).format('MM/DD/YYYY')}</span>
-                    <div className='flex justify-between items-center'>
-                        <h3 className='text-[20px] font-[500] w-[70%] truncate'>{name}</h3>
-                        <div className='flex space-x-1 cursor-pointer'>
-                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
-                            <div className="w-1 h-1 bg-[black] rounded-full"></div>
+                    <div >
+                        <span className='text-[12px]'>{dayjs(date).format('MM/DD/YYYY')}</span>
+                        <div className='flex justify-between items-center'>
+                            <h3 className='text-[20px] font-[500] w-[70%] truncate'>{name}</h3>
+                            
+                        </div>
+                        <hr className='mt-[15px] mb-[20px]'/>
+                        <div className='flex-1 overflow-auto'>
+                            <p className='font-[300] text-[15px] w-full break-words'>{noteDescription?.slice(0,120)}</p>
+                        </div>
+                        <div className='mt-[30px] flex items-center absolute bottom-[20px]'>
+                            <Image
+                                src={'/clock.png'}
+                                alt='edit note'
+                                width={24}
+                                height={24}
+                                className='cursor-pointer'
+                            />
+                            <p className='ml-[5px] text-[12px]'>{dayjs(date).format('hh:ma, dddd')}</p>
                         </div>
                     </div>
-                    <hr className='mt-[15px] mb-[20px]'/>
-                    <div className='flex-1 overflow-auto'>
-                        <p className='font-[300] text-[15px] w-full break-words'>{noteDescription?.slice(0,120)}</p>
-                    </div>
-                    <div className='mt-[30px] flex items-center absolute bottom-[20px]'>
-                        <Image
-                            src={'/clock.png'}
-                            alt='edit note'
-                            width={24}
-                            height={24}
-                            className='cursor-pointer'
-                        />
-                        <p className='ml-[5px] text-[12px]'>{dayjs(date).format('hh:ma, dddd')}</p>
-                    </div>
-                </div>
-            }  
-        </Link>
+            }
+            <button className='absolute top-8 right-5 cursor-pointer hover:bg-white/20' onClick={(e)=>{handleOpenCardDropDown(e)}}>
+                <EllipsisVertical size={20} />
+            </button>
+            <div className='absolute top-15 right-[-150px] z-99999' onClick={(e)=>e.stopPropagation()}>
+                {
+                    menuOpen &&
+                    <DropDown
+                        children={menuOptions}
+                    />    
+                }
+            </div>
+        </div>
     )
 }
 
