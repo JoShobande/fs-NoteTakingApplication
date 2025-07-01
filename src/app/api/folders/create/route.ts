@@ -14,14 +14,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, noteIds, themeColor } = await req.json()
+    const { name, noteIds, themeColor, iconColor } = await req.json()
 
     await prismadb.folder.create({
       data: {
         name,
         notes:noteIds,
         themeColor,
-        userId: session.user.id,  
+        userId: session.user.id, 
+        iconColor 
       },
     })
 

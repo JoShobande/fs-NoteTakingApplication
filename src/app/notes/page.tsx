@@ -17,8 +17,19 @@ type Note = {
   createdAt: string;
 };
 
+type Folders = {
+  id: string;
+  name: string;
+  notes: string[];
+  themeColor: string;
+  createdAt: string;
+  iconColor:string
+};
+
+
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [folders, setFolders] = useState<Folders[]>([]);
   const[loading, setLoading] = useState(false)
 
   const [openFolderModal, setOpenFolderModal] = useState(false)
@@ -37,30 +48,25 @@ export default function Home() {
     }
   }
 
+  const fetchFolders = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/folders', {method:'GET'})
+      const data = await res.json()
+      setFolders(data)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
    fetchNotes()
+   fetchFolders()
   }, [])
 
-  const folders = [
-    {
-      name:'Movie Review',
-      date: '12/12/2021',
-      bgColor: 'bg-[#DEF0FF]',
-      folderIconColor:'bg-[#9398FB]',
-    },
-    {
-      name:'Class Notes',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FFD6D5]',
-      folderIconColor: 'bg-[#C1774E]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-  ] 
+
 
   if (loading) {
     return (
@@ -81,10 +87,10 @@ export default function Home() {
                return(
                  <Card
                     type='folder'
-                    backgroundColor={folder.bgColor}
+                    backgroundColor={folder.themeColor}
                     name={folder.name}
-                    folderIconColor={folder.folderIconColor}
-                    date={folder.date}
+                    folderIconColor={folder.iconColor}
+                    date={folder.createdAt}
                     key={index}
                     pageRedirect={''}
                  />
@@ -193,7 +199,6 @@ interface CreateFolderModalProps {
 
 function CreateFolder({
   notes,
-  openFolderModal,
   setOpenFolderModal
 }: CreateFolderModalProps) {
   const router = useRouter();
@@ -233,6 +238,7 @@ function CreateFolder({
           name,
           themeColor,
           notes: selectedNotes,
+          iconColor: themeColor === 'bg-[#DEF0FF]' ? 'bg-[#9398FB]' : themeColor === 'bg-[#FFD6D5]' ? 'bg-[#C1774E]' : 'bg-[#E8E582]'
         }),
       });
       if (!res.ok) throw new Error("Failed to create folder");
@@ -247,11 +253,11 @@ function CreateFolder({
     }
   };
 
+  
   return (
     <div>
       <form
         onSubmit={handleSubmit}
-        // className="relative bg-white rounded-2xl shadow-lg w-full max-w-lg p-6"
       >
         <div className="mb-4">
           <label className="block mb-1 font-medium">Folder Name</label>
@@ -264,7 +270,6 @@ function CreateFolder({
             required
           />
         </div>
-
         <div className="mb-4">
           <span className="block mb-1 font-medium mb-2 mt-6">Folder Theme Color</span>
           <div className="flex space-x-2">

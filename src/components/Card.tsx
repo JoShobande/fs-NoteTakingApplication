@@ -68,7 +68,7 @@ const Card:React.FC<cardProps> = ({
                        
                         <div className='mt-[20px] text-[24px] font-[600]'>
                             <h3 className='mb-0 pb-0 text-[20px] truncate'>{name}</h3>
-                            <span className='text-[12px]'>{date}</span>
+                            <span className='text-[12px]'>{dayjs(date).format('hh:ma, dddd')}</span>
                         </div>
                     </div>
                 :
