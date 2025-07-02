@@ -14,18 +14,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, noteIds, themeColor, iconColor } = await req.json()
+    const { name, notes, themeColor, iconColor } = await req.json()
 
-    await prismadb.folder.create({
+    const folder = await prismadb.folder.create({
       data: {
         name,
-        notes:noteIds,
+        notes: notes?.length
+        ? {
+            connect: notes.map((id: string) => ({ id })),
+          }
+        : undefined,
         themeColor,
         userId: session.user.id, 
         iconColor 
       },
+      include: { notes: true },
     })
-
     return NextResponse.json(
       { message: 'Folder Created Successfully' },
       { status: 201 }
