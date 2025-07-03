@@ -7,6 +7,7 @@ import Menu from "@components/components/Menu";
 import Card from "@components/components/Card";
 import { Edit2, Archive, Trash2 } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Note = {
   id: string;
@@ -36,8 +37,32 @@ export default function FolderDetailPage() {
     load();
   }, [folderId]);
 
-  const handleArchive = () => { /* call your API, then router.refresh() */ };
-  const handleDelete  = () => { /* call your API, then router.push('/folders') */ };
+  const handleDeleteFolder = async() => {
+    try {
+      setLoading(true);
+      await fetch(`/api/folders/delete/${folderId}`, { method: "DELETE" });
+      toast.success("Folder moved to Trash");
+      router.push("/notes");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not delete note");
+    } finally {
+      setLoading(false);
+    }
+  }
+  const handleArchiveFolder = async() => {
+    try {
+      setLoading(true);
+      await fetch(`/api/folders/archive/${folderId}`, { method: "PUT" });
+      toast.success("Folder moved to Archive");
+      router.push("/notes");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not archive note");
+    } finally {
+      setLoading(false);
+    }
+  }
   const handleEdit    = () => router.push(`/folders/edit/${folderId}`);
 
   if (loading) {
@@ -68,13 +93,13 @@ export default function FolderDetailPage() {
               <Edit2 size={20} className="" />
             </button>
             <button
-              onClick={handleArchive}
+              onClick={handleArchiveFolder}
               className="p-2 rounded bg-white/30 hover:bg-white/50 cursor-pointer"
             >
               <Archive size={20} className="" />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={handleDeleteFolder}
               className="p-2 rounded bg-white/30 hover:bg-white/50 cursor-pointer"
             >
               <Trash2 size={20} className="" />

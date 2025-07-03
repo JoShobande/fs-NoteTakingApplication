@@ -83,7 +83,7 @@ export default function Home() {
         <h1 className='text-[25px] mb-[20px] font-[500]'>Recent Folders</h1>
         <div className='flex space-x-8 items-center'>
            {
-             folders.slice(0, 3).map((folder, index)=>{
+             folders?.slice(0, 3).map((folder, index)=>{
                return(
                  <Card
                     type='folder'

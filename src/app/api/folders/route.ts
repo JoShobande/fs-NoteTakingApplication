@@ -15,8 +15,8 @@ export async function GET(req: Request) {
     }
 
     const folders = await prismadb.folder.findMany({
-        where: {  },
-        orderBy: { createdAt: "desc" },
+      where: { userId: session.user.id, trash: false, archived: false },
+      orderBy: { createdAt: "desc" },
     });
     
     return NextResponse.json(folders);
