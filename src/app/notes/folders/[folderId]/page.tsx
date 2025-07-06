@@ -3,11 +3,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Menu from "@components/components/Menu";
 import Card from "@components/components/Card";
 import { Edit2, Archive, Trash2 } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Loader } from "lucide-react";
 import { toast } from "sonner";
+import Modal from "@components/components/Modal";
+import { MenuOptions } from "../../page";
 
 type Note = {
   id: string;
@@ -24,43 +25,48 @@ export default function FolderDetailPage() {
   const [folder, setFolder] = useState<Folder | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [loadingAction, setLoadingAction] = useState(false)
+  const [archiveModal, setArchiveModal] = useState(false)
+
+
+  const fetchData = async() => {
+    setLoading(true);
+    const fRes = await fetch(`/api/folders/${folderId}`);
+    const nRes = await fetch(`/api/folders/${folderId}/notes`);
+    setFolder(await fRes.json());
+    setNotes(await nRes.json());
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      const fRes = await fetch(`/api/folders/${folderId}`);
-      const nRes = await fetch(`/api/folders/${folderId}/notes`);
-      setFolder(await fRes.json());
-      setNotes(await nRes.json());
-      setLoading(false);
-    }
-    load();
+    fetchData()
   }, [folderId]);
 
   const handleDeleteFolder = async() => {
     try {
-      setLoading(true);
+      setLoadingAction(true);
       await fetch(`/api/folders/delete/${folderId}`, { method: "DELETE" });
       toast.success("Folder moved to Trash");
-      router.push("/notes");
+      router.push("/notes/folders");
     } catch (err) {
       console.error(err);
-      toast.error("Could not delete note");
+      toast.error("Could not delete folder. Try again later!");
     } finally {
-      setLoading(false);
+      setLoadingAction(false);
     }
   }
   const handleArchiveFolder = async() => {
     try {
-      setLoading(true);
+      setLoadingAction(true);
       await fetch(`/api/folders/archive/${folderId}`, { method: "PUT" });
       toast.success("Folder moved to Archive");
-      router.push("/notes");
+      router.push("/notes/folders");
     } catch (err) {
       console.error(err);
-      toast.error("Could not archive note");
+      toast.error("Could not archive folder. Try again later!");
     } finally {
-      setLoading(false);
+      setLoadingAction(false);
     }
   }
   const handleEdit    = () => router.push(`/folders/edit/${folderId}`);
@@ -93,13 +99,13 @@ export default function FolderDetailPage() {
               <Edit2 size={20} className="" />
             </button>
             <button
-              onClick={handleArchiveFolder}
+              onClick={()=>setArchiveModal(true)}
               className="p-2 rounded bg-white/30 hover:bg-white/50 cursor-pointer"
             >
               <Archive size={20} className="" />
             </button>
             <button
-              onClick={handleDeleteFolder}
+              onClick={()=>setDeleteModal(true)}
               className="p-2 rounded bg-white/30 hover:bg-white/50 cursor-pointer"
             >
               <Trash2 size={20} className="" />
@@ -120,10 +126,72 @@ export default function FolderDetailPage() {
                 noteDescription={note.noteContent}
                 date={note.createdAt}
                 pageRedirect={`/notes/${note.id}`}
+                menuOptions={<MenuOptions id={note.id} refetchNotes={fetchData}/>}
               />
             ))}
           </div>
         )}
+
+{
+        deleteModal &&
+          <Modal
+            title='hello'
+            children={
+              <div>
+                <p>Are you sure you want to move this item to trash?</p>
+                <div className='mt-[10px] flex'>
+                  <button 
+                    className='border p-[8px] rounded-[10px] bg-[red] text-[white] text-[14px] cursor-pointer'
+                    onClick={handleDeleteFolder}
+                    disabled={loading}
+                  >
+                    {
+                      loadingAction ? <Loader className='animate-spin'/> : 'Delete'
+                    }
+                  </button>
+                  <button 
+                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
+                    onClick={()=>setDeleteModal(false)}
+                  > 
+                    Cancel
+                  </button>
+                </div>
+                
+              </div>
+              
+            }
+            onClose={()=>setDeleteModal(false)}
+          />
+      }
+      {
+        archiveModal &&
+          <Modal
+            title='hello'
+            children={
+              <div>
+                <p>Are you sure you want to move this item your Archive?</p>
+                <div className='mt-[10px] flex'>
+                  <button 
+                    className='border p-[8px] rounded-[10px] bg-[green] text-[white] text-[14px] cursor-pointer'
+                    onClick={handleArchiveFolder}
+                    disabled={loading}
+                  >
+                    {loadingAction ? <Loader className='animate-spin'/> : 'Archive'}
+                  </button>
+                  <button 
+                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
+                    onClick={()=>setArchiveModal(false)}
+                  > 
+                    Cancel
+                  </button>
+                </div>
+                
+              </div>
+              
+            }
+            onClose={()=>setArchiveModal(false)}
+          />
+      }
       </section>
     
   );

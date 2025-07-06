@@ -3,8 +3,8 @@
 import Card from "@components/components/Card"
 import { useEffect, useState } from "react";
 import { FoldersType } from "../page";
-
-
+import { useRouter} from "next/navigation"
+import { toast } from "sonner";
  
 export default function Folders() {
 
@@ -43,11 +43,59 @@ export default function Folders() {
                   date={folder.createdAt}
                   key={index}
                   pageRedirect={`/notes/folders/${folder.id}`}
+                  menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders}/>}
               />
               )
           })
         }
       </div>
     </section>
+  )
+}
+
+export const FolderMenuOptions = ({id, refetchFolders}:{id:string, refetchFolders:() => Promise<void>}) => {
+  const router = useRouter()
+  const [loadingDelete, setLoadingDelete]= useState(false)
+  const [loadingArchiving, setLoadingArchiving]= useState(false)
+
+  const handleEditNote = () => {
+    // router.push(`/fode/add-new?id=${id}`)
+  }
+
+  const handleDeleteNote = async() => {
+    try {
+      setLoadingDelete(true);
+      await fetch(`/api/folders/delete/${id}`, { method: "DELETE" });
+      toast.success("folder moved to Trash");
+      refetchFolders()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not delete folder");
+    } finally {
+      setLoadingDelete(false);
+    }
+  }
+  const handleArchiveNote = async() => {
+    try {
+      setLoadingArchiving(true);
+      await fetch(`/api/folders/archive/${id}`, { method: "PUT" });
+      toast.success("folder moved to Archive");
+      refetchFolders()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not archive folder");
+    } finally {
+      setLoadingArchiving(false);
+    }
+  }
+
+  return(
+    <div className='p-[15px]'>
+      <ul>
+          <li className='p-2' onClick={handleEditNote}>Edit</li>
+          <li className='p-2' onClick={handleArchiveNote}>{loadingArchiving ? 'wait...' : 'Archive'}</li>
+          <li className='p-2' onClick={handleDeleteNote}>{loadingDelete ? 'wait...' : 'Delete'}</li>
+      </ul>
+    </div>
   )
 }

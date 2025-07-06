@@ -25,6 +25,7 @@ export async function GET(
       folderId: folderId,
       userId: session.user.id,
       trash: false,
+      archived: false
     },
     orderBy: { createdAt: "desc" },
   });

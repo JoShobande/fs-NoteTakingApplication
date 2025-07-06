@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react'
 import { useRouter} from "next/navigation"
 import { toast } from "sonner";
 import Modal from '../../components/Modal'
+import { FolderMenuOptions } from "./folders/page";
 
 
 type Note = {
@@ -93,6 +94,7 @@ export default function Home() {
                     date={folder.createdAt}
                     key={index}
                     pageRedirect={''}
+                    menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders}/>}
                  />
                )
              })
@@ -138,7 +140,7 @@ export default function Home() {
   );
 }
 
-const MenuOptions = ({id, refetchNotes}:{id:string, refetchNotes:() => Promise<void>}) => {
+export const MenuOptions = ({id, refetchNotes}:{id:string, refetchNotes:() => Promise<void>}) => {
   const router = useRouter()
   const [loadingDelete, setLoadingDelete]= useState(false)
   const [loadingArchiving, setLoadingArchiving]= useState(false)
