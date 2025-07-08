@@ -34,7 +34,7 @@ export default function DropdownMenu({
     //   ref={containerRef}
       className={`relative inline-block text-left ${className || ""}`}
     >
-        <div className="w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-999">
+        <div className="w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-99">
             {children}
         </div>  
     </div>

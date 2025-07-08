@@ -97,7 +97,7 @@ const Card:React.FC<cardProps> = ({
             <button className='absolute top-8 right-5 cursor-pointer hover:bg-white/20' onClick={(e)=>{handleOpenCardDropDown(e)}}>
                 <EllipsisVertical size={20} />
             </button>
-            <div className='absolute top-15 right-[-150px] z-99999' onClick={(e)=>e.stopPropagation()}>
+            <div className='absolute top-15 right-[-150px] z-[9]' onClick={(e)=>e.stopPropagation()}>
                 {
                     menuOpen &&
                     <DropDown

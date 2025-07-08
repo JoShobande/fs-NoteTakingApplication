@@ -36,8 +36,12 @@ export default function FolderDetailPage() {
     const nRes = await fetch(`/api/folders/${folderId}/notes`);
     setFolder(await fRes.json());
     setNotes(await nRes.json());
+
+
     setLoading(false);
   }
+
+  console.log(folder)
 
   useEffect(() => {
     fetchData()

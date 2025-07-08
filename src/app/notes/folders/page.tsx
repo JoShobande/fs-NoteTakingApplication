@@ -1,15 +1,21 @@
 'use client'
 
 import Card from "@components/components/Card"
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FoldersType } from "../page";
 import { useRouter} from "next/navigation"
 import { toast } from "sonner";
+import Modal from "@components/components/Modal";
+import CreateFolder from "@components/components/NewFolder";
  
 export default function Folders() {
 
   const [folders, setFolders] = useState<FoldersType[]>([]);
   const[loading, setLoading] = useState(false)
+  const [openFolderModal, setOpenFolderModal] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+
+  const [folderId, setFolderId] = useState('')
 
   const fetchFolders = async () => {
     setLoading(true)
@@ -24,13 +30,28 @@ export default function Folders() {
     }
   }
 
+  const handleOpenFolderModal = (id:string) =>{
+    setFolderId(id)
+    setEditMode(true)
+    setOpenFolderModal(true)
+   
+  }
+
   useEffect(()=>{
     fetchFolders()
   },[])
   
   return (
     <section>
-      <h1 className='text-[25px] mb-[20px] font-[500]'>Folders</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Folders</h1>
+        <button
+          onClick={() => setOpenFolderModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          + New Folder
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {
           folders.map((folder, index)=>{
@@ -43,23 +64,31 @@ export default function Folders() {
                   date={folder.createdAt}
                   key={index}
                   pageRedirect={`/notes/folders/${folder.id}`}
-                  menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders}/>}
+                  menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
               />
               )
           })
         }
       </div>
+      {
+        openFolderModal &&
+        <Modal
+          title='Create Folder'
+          children={<CreateFolder  openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal} folderId={folderId} editMode={editMode} />}
+          onClose={()=>setOpenFolderModal(false)}
+        />
+      }
     </section>
   )
 }
 
-export const FolderMenuOptions = ({id, refetchFolders}:{id:string, refetchFolders:() => Promise<void>}) => {
-  const router = useRouter()
+export const FolderMenuOptions = ({id, refetchFolders, handleOpenFolderModal}:{id:string, refetchFolders:() => Promise<void>, handleOpenFolderModal:(id: string) => void}) => {
   const [loadingDelete, setLoadingDelete]= useState(false)
   const [loadingArchiving, setLoadingArchiving]= useState(false)
 
   const handleEditNote = () => {
-    // router.push(`/fode/add-new?id=${id}`)
+    handleOpenFolderModal(id)
+    // setOpenFolderModal(false)
   }
 
   const handleDeleteNote = async() => {
