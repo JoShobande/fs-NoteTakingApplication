@@ -1,128 +1,51 @@
 'use client'
 
 import Card from "@components/components/Card"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { FoldersType, Note } from "../page"
+
 
  
 export default function Trash() {
 
-  const folders = [
-    {
-      name:'Movie Review',
-      date: '12/12/2021',
-      bgColor: 'bg-[#DEF0FF]',
-      folderIconColor:'bg-[#9398FB]',
-    },
-    {
-      name:'Class Notes',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FFD6D5]',
-      folderIconColor: 'bg-[#C1774E]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-    {
-      name:'Book Lists',
-      date: '12/12/2021',
-      bgColor: 'bg-[#FEFBEB]',
-      folderIconColor:'bg-[#E8E582]',
-    },
-  ] 
+  const [notes, setNotes] = useState<Note[]>([])
+  const [folders, setFolders] = useState<FoldersType[]>([])
 
-  const notes = [
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#E8E582]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#EFAAAA]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#6CB5DF]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-    {
-      name:'Mid term exam',
-      date: '12/12/2021',
-      bgColor: 'bg-[#6CB5DF]',
-      description:'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod deleniti cupiditate nemo eveniet incidunt. Adipisci vitae a inventore iure laudantium tempora debitis! Harum iste rem neque, voluptatum quos ipsum laborum?',
-      time: '10:30 PM Monday'
-    },
-  ]  
+  const fetchDeletedNotes = async () => {
+    // setLoading(true)
+    try {
+      const res = await fetch('/api/notes/trash', {method:'GET'})
+      const data = await res.json()
+      setNotes(data)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      // setLoading(false)
+    }
+  }
+
+  const fetchDeletedFolders = async () => {
+    // setLoading(true)
+    try {
+      const res = await fetch('/api/folders/trash', {method:'GET'})
+      const data = await res.json()
+      setFolders(data)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      // setLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    fetchDeletedNotes()
+    fetchDeletedFolders()
+  },[])
+
+
+
+
+   
 
   const [view, setView] = useState('notes')
   
@@ -167,26 +90,28 @@ export default function Trash() {
                   notes.map((note, index)=>{
                     return(
                       <Card
-                          type='note'
-                          backgroundColor={note.bgColor}
-                          name={note.name}
-                          noteDescription={note.description}
-                          date={note.date}
-                          key={index}
-                          className='mb-4'
+                        type='note'
+                        backgroundColor={note.themeColor}
+                        name={note.title}
+                        noteDescription={note.noteContent}
+                        date={note.createdAt}
+                        key={index}
+                        className='mb-4'
+                        pageRedirect={`/notes/${note.id}`}
                       />
                     )
                   })
-                ) : (                
+                ) : (       
                   folders.map((folder, index)=>{
                     return(
                       <Card
                         type='folder'
-                        backgroundColor={folder.bgColor}
+                        backgroundColor={folder.themeColor}
                         name={folder.name}
-                        folderIconColor={folder.folderIconColor}
-                        date={folder.date}
+                        folderIconColor={folder.iconColor}
+                        date={folder.createdAt}
                         key={index}
+                        pageRedirect={`/notes/folders/${folder.id}`}
                       />
                     )
                   })
