@@ -46,8 +46,7 @@ export default function NewNotePage() {
     }
   }
 
-  const handleCreateNewNote = async(e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateNewNote = async() => {
     if(title === '' || noteContent === ''){
       return
     }
@@ -67,8 +66,7 @@ export default function NewNotePage() {
     }
   }
 
-  const handleEditExistingNote = async(e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEditExistingNote = async() => {
     if(title === '' || noteContent === ''){
       return
     }
@@ -89,7 +87,8 @@ export default function NewNotePage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    editId ? handleEditExistingNote(e) : handleCreateNewNote(e)
+    e.preventDefault()
+    editId ? handleEditExistingNote() : handleCreateNewNote()
     
   };
 

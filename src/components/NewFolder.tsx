@@ -1,3 +1,4 @@
+import { Note } from "@components/app/notes/page";
 import { useRouter } from "next/navigation";
 import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -26,7 +27,7 @@ interface CreateFolderModalProps {
 }
 
 const CreateFolder =({
-    notes,
+    // notes,
     setOpenFolderModal,
     folderId,
     editMode
@@ -43,6 +44,7 @@ const CreateFolder =({
     const [themeColor, setThemeColor] = useState(colorOptions[0].value);
     const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const [notes, setNotes] = useState<Note[]>([])
   
     
 
@@ -50,13 +52,12 @@ const CreateFolder =({
         // setLoadingNoteDetails(true)
         try {
             const fRes = await fetch(`/api/folders/${folderId}`);
-            // const nRes = await fetch(`/api/folders/${folderId}/notes`);
+            const nRes = await fetch(`/api/folders/${folderId}/notes`);
             const folderResponse= await fRes.json()
+            const notesResponse = await nRes.json()
             setName(folderResponse.name)
             setThemeColor(folderResponse.themeColor)
-            // selectedNotes((folderResponse.))
-            // const notesResponse = nRes.json()
-            
+            setSelectedNotes(notesResponse.map((note:any)=>note.id))
         } catch (err: any) {
           console.error(err)
         } finally {
@@ -64,10 +65,37 @@ const CreateFolder =({
         }
     }
 
- 
-  
-    const handleSubmit = async (e: FormEvent) => {
-      e.preventDefault();
+    const fetchNotes = async () => {
+      // setLoading(true)
+      try {
+        const res = await fetch('/api/notes', {method:'GET'})
+        const data = await res.json()
+        setNotes(data)
+      } catch (err: any) {
+        console.error(err)
+      } finally {
+        // setLoading(false)
+      }
+    }
+
+    const handleEditFolder = async() => {
+      try{
+        setLoading(true)
+        const res = await fetch(`/api/folders/edit/${folderId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name,  notes: selectedNotes, themeColor, iconColor: themeColor === 'bg-[#DEF0FF]' ? 'bg-[#9398FB]' : themeColor === 'bg-[#FFD6D5]' ? 'bg-[#C1774E]' : 'bg-[#E8E582]' }),
+        });
+        toast.success('Successfully edited')
+        setOpenFolderModal(false)
+      }catch(error){
+        toast.error(error.message || "Could not edit folder");
+      }finally{
+        setLoading(false)
+      }
+    }
+
+    const hanldeCreateNewFolder = async() => {
       if (!name.trim()) {
         toast.error("Folder name is required");
         return;
@@ -93,14 +121,24 @@ const CreateFolder =({
         toast.error(err.message || "Could not save folder");
       } finally {
         setLoading(false);
+
       }
+    }
+  
+    const handleSubmit = async (e: FormEvent) => {
+      e.preventDefault();
+      editMode ? handleEditFolder() : hanldeCreateNewFolder()
     };
 
     useEffect(()=>{
         if(editMode){
-            handleGetFolderToBeEdited()
+          handleGetFolderToBeEdited()
         }
     },[folderId, editMode])
+
+    useEffect(()=>{
+      fetchNotes()
+    },[])
   
     return (
       <div className='z-[99]'>
@@ -138,25 +176,39 @@ const CreateFolder =({
           </div>
   
           <div className="mb-6 mt-6">
-            <label className="block mb-1 font-medium">Select Note(s)</label>
-            <select
-              multiple
-              value={selectedNotes}
-              onChange={(e) =>
-                setSelectedNotes(
-                  Array.from(e.target.selectedOptions, (o) => o.value)
-                )
-              }
-              className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {notes?.map((n) => (
-                <option key={n.id} value={n.id}>
-                  {n.title}
-                </option>
-              ))}
-            </select>
+            <label className="block mb-2 font-medium">Select Note(s)</label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-auto">
+              {notes.map((n) => {
+                const isSelected = selectedNotes.includes(n.id);
+                return (
+                  <button
+                    key={n.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedNotes((prev) =>
+                        prev.includes(n.id)
+                          ? prev.filter((id) => id !== n.id)  // deselect
+                          : [...prev, n.id]                   // select
+                      );
+                    }}
+                    className={`
+                      flex items-center justify-between p-3 border rounded-lg 
+                      ${isSelected 
+                        ? "bg-blue-100 border-blue-500" 
+                        : "bg-white border-gray-300 hover:bg-gray-50"}
+                    `}
+                  >
+                    <span className="truncate">{n.title}</span>
+                    {isSelected && (
+                      <span className="inline-block w-4 h-4 bg-blue-500 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
             <p className="mt-1 text-xs text-gray-500">
-              Hold Shift or Ctrl/Cmd to select multiple
+              Click to (de)select notes
             </p>
           </div>
   
@@ -177,7 +229,7 @@ const CreateFolder =({
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
-              {loading ? "Saving…" : "Create"}
+              {loading ? "Saving…" : editMode? 'Save Changes' : "Create"}
             </button>
           </div>
         </form>

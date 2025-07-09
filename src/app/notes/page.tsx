@@ -11,7 +11,7 @@ import { FolderMenuOptions } from "./folders/page";
 import CreateFolder from "@components/components/NewFolder";
 
 
-type Note = {
+export type Note = {
   id: string;
   title: string;
   noteContent: string;
@@ -35,6 +35,9 @@ export default function Home() {
   const[loading, setLoading] = useState(false)
 
   const [openFolderModal, setOpenFolderModal] = useState(false)
+
+  const [folderId, setFolderId] = useState('')
+  const [editMode, setEditMode] = useState(false)
 
 
   const fetchNotes = async () => {
@@ -61,6 +64,13 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleOpenFolderModal = (id:string) =>{
+    setFolderId(id)
+    setEditMode(true)
+    setOpenFolderModal(true)
+   
   }
 
   useEffect(() => {
@@ -95,7 +105,7 @@ export default function Home() {
                     date={folder.createdAt}
                     key={index}
                     pageRedirect={''}
-                    // menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders}/>}
+                    menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
                  />
                )
              })
@@ -133,7 +143,7 @@ export default function Home() {
         openFolderModal &&
         <Modal
           title='Create Folder'
-          children={<CreateFolder notes={notes} openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal}/>}
+          children={<CreateFolder notes={notes} openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal} editMode={editMode} folderId={folderId}/>}
           onClose={()=>setOpenFolderModal(false)}
         />
       }
