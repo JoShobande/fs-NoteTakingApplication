@@ -4,6 +4,8 @@ import Card from "@components/components/Card"
 import { useEffect, useState } from "react"
 import { FoldersType, Note } from "../page"
 import { toast } from "sonner";
+import Modal from "@components/components/Modal";
+import { Loader } from "lucide-react";
 
  
 export default function Trash() {
@@ -11,6 +13,10 @@ export default function Trash() {
   const [notes, setNotes] = useState<Note[]>([])
   const [folders, setFolders] = useState<FoldersType[]>([])
   const [loadingRestore, setLoadingRestore] = useState(false)
+  
+  const [openRestoreAllModal, setOpenRestoreAllModal] = useState(false)
+
+  const [view, setView] = useState<'notes'|'folders'>('notes')
 
   const fetchDeletedNotes = async () => {
     // setLoading(true)
@@ -51,6 +57,19 @@ export default function Trash() {
     }
   }
 
+  const handleRestoreAllNotes = async() => {
+    try {
+      setLoadingRestore(true)
+      await fetch(`/api/notes/trash/restore`, {method:'PUT'})
+      toast.success('Successfully restored all Note')
+      fetchDeletedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingRestore(false)
+    }
+  }
+
   const handleRestoreIndividualFolder = async(id:string) => {
     try {
       setLoadingRestore(true)
@@ -64,12 +83,25 @@ export default function Trash() {
     }
   }
 
+  const handleRestoreAllFolders = async() => {
+    try {
+      setLoadingRestore(true)
+      await fetch(`/api/folders/trash/restore`, {method:'PUT'})
+      toast.success('Successfully restored all Note')
+      fetchDeletedFolders()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingRestore(false)
+    }
+  }
+
   useEffect(()=>{
     fetchDeletedNotes()
     fetchDeletedFolders()
   },[])
 
-  const [view, setView] = useState('notes')
+  
   
     return (
       <section className="min-h-screen">
@@ -79,7 +111,7 @@ export default function Trash() {
               <h1 className="text-3xl font-semibold">Trash</h1>
               <div className="space-x-2">
                 <button
-                  // onClick={restoreAll}
+                  onClick={()=>setOpenRestoreAllModal(true)}
                   className="px-4 py-2 bg-green-600 text-white text-[14px] rounded hover:bg-green-700 rounded-[20px] cursor-pointer"
                 >
                   Restore All
@@ -156,6 +188,35 @@ export default function Trash() {
             )}
           </main>
       </div>
+      {
+        openRestoreAllModal &&
+        <Modal
+            title={`Restore all ${view}`}
+            children={
+              <div>
+                <p>Are you sure you want to restore all {`${view}`}?</p>
+                <div className='mt-[10px] flex'>
+                  <button 
+                    className='border p-[8px] rounded-[10px] bg-[green] text-[white] text-[14px] cursor-pointer'
+                    onClick={view === 'notes' ? handleRestoreAllNotes: handleRestoreAllFolders}
+                    disabled={loadingRestore}
+                  >
+                    {loadingRestore ? <Loader className='animate-spin'/> : 'Restore'}
+                  </button>
+                  <button 
+                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
+                    onClick={()=>setOpenRestoreAllModal(false)}
+                  > 
+                    Cancel
+                  </button>
+                </div>
+                
+              </div>
+              
+            }
+            onClose={()=>setOpenRestoreAllModal(false)}
+          />
+      }
     </section>
     
     )
