@@ -3,13 +3,14 @@
 import Card from "@components/components/Card"
 import { useEffect, useState } from "react"
 import { FoldersType, Note } from "../page"
-
+import { toast } from "sonner";
 
  
 export default function Trash() {
 
   const [notes, setNotes] = useState<Note[]>([])
   const [folders, setFolders] = useState<FoldersType[]>([])
+  const [loadingRestore, setLoadingRestore] = useState(false)
 
   const fetchDeletedNotes = async () => {
     // setLoading(true)
@@ -37,15 +38,36 @@ export default function Trash() {
     }
   }
 
+  const handleRestoreIndividualNote = async(id:string) => {
+    try {
+      setLoadingRestore(true)
+      await fetch(`/api/notes/trash/restore/${id}`, {method:'PUT'})
+      toast.success('Successfully restored Note')
+      fetchDeletedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingRestore(false)
+    }
+  }
+
+  const handleRestoreIndividualFolder = async(id:string) => {
+    try {
+      setLoadingRestore(true)
+      await fetch(`/api/folders/trash/restore/${id}`, {method:'PUT'})
+      toast.success('Successfully restored folder')
+      fetchDeletedFolders()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingRestore(true)
+    }
+  }
+
   useEffect(()=>{
     fetchDeletedNotes()
     fetchDeletedFolders()
   },[])
-
-
-
-
-   
 
   const [view, setView] = useState('notes')
   
@@ -73,16 +95,16 @@ export default function Trash() {
       
             <div className="flex justify-around lg:justify-start lg:space-x-12 border-b mb-6">
               <button
-                className={`pb-2 ${view === "notes" ? "border-b-2 border-blue-600" : "text-gray-500"}`}
+                className={`pb-2 ${view === "notes" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
                 onClick={() => setView("notes")}
               >
-                Deleted Notes
+                Notes
               </button>
               <button
-                className={`pb-2 ${view === "folders" ? "border-b-2 border-blue-600" : "text-gray-500"}`}
+                className={`pb-2 ${view === "folders" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
                 onClick={() => setView("folders")}
               >
-                Deleted Folders
+               Folders
               </button>
             </div>
               <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6'>
@@ -98,6 +120,7 @@ export default function Trash() {
                         key={index}
                         className='mb-4'
                         pageRedirect={`/notes/${note.id}`}
+                        menuOptions={<MenuOptions id={note.id} handleRestore={handleRestoreIndividualNote} loadingRestore={loadingRestore} />}
                       />
                     )
                   })
@@ -112,6 +135,7 @@ export default function Trash() {
                         date={folder.createdAt}
                         key={index}
                         pageRedirect={`/notes/folders/${folder.id}`}
+                        menuOptions={<MenuOptions id={folder.id} handleRestore={handleRestoreIndividualFolder} loadingRestore={loadingRestore}  />}
                       />
                     )
                   })
@@ -135,4 +159,19 @@ export default function Trash() {
     </section>
     
     )
+}
+
+export const MenuOptions = ({id, handleRestore, loadingRestore}:{id:string, handleRestore: (id: string) => Promise<void>, loadingRestore: boolean}) => {
+
+  const handleRestoreItem = () =>{
+    handleRestore(id)
+  }
+
+  return(
+    <div className='p-[15px]'>
+      <ul>
+        <li className='p-2' onClick={handleRestoreItem}>{loadingRestore ? 'wait...' : 'Restore'}</li>
+      </ul>
+    </div>
+  )
 }
