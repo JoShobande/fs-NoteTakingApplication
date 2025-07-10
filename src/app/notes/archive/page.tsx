@@ -26,7 +26,7 @@ export default function Archive() {
   const [folderId, setFolderId] = useState('')
   const [openFolderModal, setOpenFolderModal] = useState(false)
 
-  const fetchArvhivedNotes = async () => {
+  const fetchArchivedNotes = async () => {
     // setLoading(true)
     try {
       const res = await fetch('/api/notes/archive', {method:'GET'})
@@ -57,7 +57,7 @@ export default function Archive() {
       setLoadingAction(true)
       await fetch(`/api/notes/unarchive/${id}`, {method:'PUT'})
       toast.success('Successfully removed note from archive')
-      fetchArvhivedNotes()
+      fetchArchivedNotes()
     } catch (err: any) {
       console.error(err)
     } finally {
@@ -85,90 +85,9 @@ export default function Archive() {
    
   }
 
-  const handleRestoreAllNotes = async() => {
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/notes/trash/restore`, {method:'PUT'})
-      toast.success('Successfully restored all Note')
-      fetchArvhivedNotes()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-
-  const handleRestoreAllFolders = async() => {
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/folders/trash/restore`, {method:'PUT'})
-      toast.success('Successfully restored all Note')
-      fetchArchivedFolders()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-  
-  const handlePermanentDeleteNote = async() =>{
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/notes/permanentDelete`, {method:'DELETE'})
-      toast.success('Successfully emptied trash')
-      fetchArvhivedNotes()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-
-  const handlePermanentDeleteFolder = async() =>{
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/folders/permanentDelete`, {method:'DELETE'})
-      toast.success('Successfully emptied trash')
-      fetchArchivedFolders()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-
-   
-  const handlePermanentDeleteSingleNote = async(id:string) =>{
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/notes/permanentDelete/${id}`, {method:'DELETE'})
-      toast.success('Successfully emptied trash')
-      fetchArvhivedNotes()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-
-  const handlePermanentDeleteSingleFolder = async(id:string) =>{
-    try {
-      setLoadingAction(true)
-      await fetch(`/api/folders/permanentDelete/${id}`, {method:'DELETE'})
-      toast.success('Successfully emptied trash')
-      fetchArchivedFolders()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingAction(false)
-    }
-  }
-
-
-
   useEffect(()=>{
     fetchArchivedFolders()
-    fetchArvhivedNotes()
+    fetchArchivedNotes()
   },[])
 
   
@@ -220,8 +139,8 @@ export default function Archive() {
                           <MenuOptions 
                             id={note.id} 
                             handleUnarchive={handleUnarchiveIndividualNote} 
-                            handleDelete={handlePermanentDeleteSingleNote} 
                             loadingAction={loadingAction}
+                            refetchItem={fetchArchivedNotes}
                             type='note'
                           />
                         }
@@ -244,8 +163,7 @@ export default function Archive() {
                             id={folder.id} 
                             handleUnarchive={handleUnarchiveIndividualFolder} 
                             handleOpenFolderModal={handleOpenFolderModal}
-                            // refetchFolders={fetchArchivedFolders}
-                            handleDelete={handlePermanentDeleteSingleFolder}  
+                            refetchItem={fetchArchivedFolders}
                             loadingAction={loadingAction}
                             type='folder'
                           />
@@ -271,68 +189,17 @@ export default function Archive() {
           </main>
       </div>
       {
-        openRestoreAllModal &&
-        <Modal
-            title={`Restore all ${view}`}
-            children={
-              <div>
-                <p>Are you sure you want to restore all {`${view}`}?</p>
-                <div className='mt-[10px] flex'>
-                  <button 
-                    className='border p-[8px] rounded-[10px] bg-[green] text-[white] text-[14px] cursor-pointer'
-                    onClick={view === 'notes' ? handleRestoreAllNotes: handleRestoreAllFolders}
-                    disabled={loadingAction}
-                  >
-                    {loadingAction ? <Loader className='animate-spin'/> : 'Restore'}
-                  </button>
-                  <button 
-                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
-                    onClick={()=>setOpenRestoreAllModal(false)}
-                  > 
-                    Cancel
-                  </button>
-                </div>
-                
-              </div>
-              
-            }
-            onClose={()=>setOpenRestoreAllModal(false)}
-          />
-      }
-       {
-        openDeleteAllModal &&
-        <Modal
-            title={`Delete all ${view}`}
-            children={
-              <div>
-                <p>Are you sure you want to permanently all {`${view}`}?</p>
-                <div className='mt-[10px] flex'>
-                  <button 
-                    className='border p-[8px] rounded-[10px] bg-[red] text-[white] text-[14px] cursor-pointer'
-                    onClick={view === 'notes' ? handlePermanentDeleteNote: handlePermanentDeleteFolder}
-                    disabled={loadingAction}
-                  >
-                    {loadingAction ? <Loader className='animate-spin'/> : 'Delete'}
-                  </button>
-                  <button 
-                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
-                    onClick={()=>setOpeDeleteAllModal(false)}
-                  > 
-                    Cancel
-                  </button>
-                </div>
-                
-              </div>
-              
-            }
-            onClose={()=>setOpeDeleteAllModal(false)}
-          />
-      }
-      {
         openFolderModal &&
           <Modal
             title='Create Folder'
-            children={<CreateFolder  openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal} folderId={folderId} editMode={editMode}  />}
+            children={
+              <CreateFolder  
+                openFolderModal={openFolderModal} 
+                setOpenFolderModal={setOpenFolderModal} 
+                folderId={folderId} 
+                editMode={editMode}  
+                />
+              }
             onClose={()=>setOpenFolderModal(false)}
           />
       }
@@ -346,21 +213,22 @@ export const MenuOptions = (
     id, 
     handleUnarchive, 
     loadingAction, 
-    handleDelete, 
+    refetchItem, 
     type,
     handleOpenFolderModal,
   }:{
     id:string, 
     handleUnarchive: (id: string) => Promise<void>, 
-    loadingAction: boolean, 
-    handleDelete: (id: string) => Promise<void>, 
+    loadingAction: boolean,  
     type:'note' | 'folder',
-    handleOpenFolderModal?: (id: string) => void,   
+    handleOpenFolderModal?: (id: string) => void, 
+    refetchItem: () => Promise<void>  
   }
 ) => {
   const router = useRouter()
   const [action, setAction] = useState('')
-  
+  const [loadingDelete, setLoadingDelete]= useState(false)
+ 
   const handleUnarchiveItem = () =>{
     setAction('unarchive')
     handleUnarchive(id)
@@ -374,10 +242,37 @@ export const MenuOptions = (
       handleOpenFolderModal && handleOpenFolderModal(id)
     } 
   }
-  
+
+  const handleDeleteNote = async() => {
+    try {
+      setLoadingDelete(true);
+      await fetch(`/api/notes/delete/${id}`, { method: "DELETE" });
+      toast.success("Note moved to Trash");
+      refetchItem()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not delete note");
+    } finally {
+      setLoadingDelete(false);
+    }
+  }
+
+  const handleDeleteFolder = async() => {
+    try {
+      setLoadingDelete(true);
+      await fetch(`/api/folders/delete/${id}`, { method: "DELETE" });
+      toast.success("Folder moved to Trash");
+      refetchItem()
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not delete folder");
+    } finally {
+      setLoadingDelete(false);
+    }
+  }
+
   const handleDeleteItem = () => {
-    setAction('delete')
-    handleDelete(id)
+    type === 'note' ? handleDeleteNote() : handleDeleteFolder()
   }
 
   return(
@@ -385,7 +280,7 @@ export const MenuOptions = (
       <ul>
         <li className='p-2' onClick={handleUnarchiveItem}>{(loadingAction && action === 'unarchive') ? 'wait...' : 'Unarchive'}</li>
         <li className='p-2' onClick={handleEditItem}>{(loadingAction && action ===' edit') ? 'wait...' : 'Edit'}</li>
-        <li className='p-2' onClick={handleDeleteItem}>{(loadingAction && action ===' delete') ? 'wait...' : 'Delete'}</li>
+        <li className='p-2' onClick={handleDeleteItem}>{loadingDelete ? 'wait...' : 'Delete'}</li>
       </ul>
     </div>
   )
