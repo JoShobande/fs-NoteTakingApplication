@@ -16,9 +16,8 @@ export default function Archive() {
   const [folders, setFolders] = useState<FoldersType[]>([])
   const [loadingAction, setLoadingAction] = useState(false)
   
-  const [openRestoreAllModal, setOpenRestoreAllModal] = useState(false)
-  const [openDeleteAllModal, setOpeDeleteAllModal] = useState(false)
-
+  const [openUnarchiveAllModal, setOpenUnarchiveAllModal] = useState(false)
+ 
   const [view, setView] = useState<'notes'|'folders'>('notes')
 
   const [editMode, setEditMode] = useState(false)
@@ -78,134 +77,191 @@ export default function Archive() {
     }
   }
 
+  const handleUnarchiveAllNotes = async() => {
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/notes/unarchive`, {method:'PUT'})
+      toast.success('Successfully restored all Note')
+      setOpenUnarchiveAllModal(false)
+      fetchArchivedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
+  const handleUnarchiveAllFolders = async() => {
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/folders/unarchive`, {method:'PUT'})
+      toast.success('Successfully restored all Note')
+      setOpenUnarchiveAllModal(false)
+      fetchArchivedFolders()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
   const handleOpenFolderModal = (id:string) =>{
     setFolderId(id)
     setEditMode(true)
     setOpenFolderModal(true)
-   
   }
+
 
   useEffect(()=>{
     fetchArchivedFolders()
     fetchArchivedNotes()
   },[])
 
+
   
-  
-    return (
-      <section className="min-h-screen">
-        <div className="flex">
-          <main className="flex-1 p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-semibold">Archive</h1>
-              <div className="space-x-2">
-                <button
-                  onClick={()=>setOpenRestoreAllModal(true)}
-                  className="px-4 py-2 bg-green-600 text-white text-[14px] rounded hover:bg-green-700 rounded-[20px] cursor-pointer"
+  return (
+    <section className="min-h-screen">
+      <div className="flex">
+        <main className="flex-1 p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-semibold">Archive</h1>
+            <div className="space-x-2">
+              <button
+                onClick={()=>setOpenUnarchiveAllModal(true)}
+                className="px-4 py-2 bg-green-600 text-white text-[14px] rounded hover:bg-green-700 rounded-[20px] cursor-pointer"
+              >
+                {`Remove all ${view} from archive`}
+              </button>
+            </div>
+          </div>
+    
+          <div className="flex justify-around lg:justify-start lg:space-x-12 border-b mb-6">
+            <button
+              className={`pb-2 ${view === "notes" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
+              onClick={() => setView("notes")}
+            >
+              Notes
+            </button>
+            <button
+              className={`pb-2 ${view === "folders" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
+              onClick={() => setView("folders")}
+            >
+              Folders
+            </button>
+          </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6'>
+              {view === "notes" ? (  
+                notes.map((note, index)=>{
+                  return(
+                    <Card
+                      type='note'
+                      backgroundColor={note.themeColor}
+                      name={note.title}
+                      noteDescription={note.noteContent}
+                      date={note.createdAt}
+                      key={index}
+                      className='mb-4'
+                      pageRedirect={`/notes/${note.id}`}
+                      menuOptions={
+                        <MenuOptions 
+                          id={note.id} 
+                          handleUnarchive={handleUnarchiveIndividualNote} 
+                          loadingAction={loadingAction}
+                          refetchItem={fetchArchivedNotes}
+                          type='note'
+                        />
+                      }
+                    />
+                  )
+                })
+              ) : (       
+                folders.map((folder, index)=>{
+                  return(
+                    <Card
+                      type='folder'
+                      backgroundColor={folder.themeColor}
+                      name={folder.name}
+                      folderIconColor={folder.iconColor}
+                      date={folder.createdAt}
+                      key={index}
+                      pageRedirect={`/notes/folders/${folder.id}`}
+                      menuOptions={
+                        <MenuOptions 
+                          id={folder.id} 
+                          handleUnarchive={handleUnarchiveIndividualFolder} 
+                          handleOpenFolderModal={handleOpenFolderModal}
+                          refetchItem={fetchArchivedFolders}
+                          loadingAction={loadingAction}
+                          type='folder'
+                        />
+                      }
+                    />
+                  )
+                })
+              )}
+            </div>
+          
+    
+          {/* 4️⃣ Empty State */}
+          {view === "notes" && notes.length === 0 && (
+            <div className="text-center py-20 text-gray-500">
+              No deleted notes here — you’re all caught up!
+            </div>
+          )}
+          {view === "folders" && folders.length === 0 && (
+            <div className="text-center py-20 text-gray-500">
+              No deleted folders here — you’re all caught up!
+            </div>
+          )}
+        </main>
+    </div>
+    {
+      openFolderModal &&
+        <Modal
+          title='Create Folder'
+          children={
+            <CreateFolder  
+              openFolderModal={openFolderModal} 
+              setOpenFolderModal={setOpenFolderModal} 
+              folderId={folderId} 
+              editMode={editMode}  
+              />
+            }
+          onClose={()=>setOpenFolderModal(false)}
+        />
+    }
+    {
+      openUnarchiveAllModal &&
+        <Modal
+          title={`Restore all ${view}`}
+          children={
+            <div>
+              <p>Are you sure you want to remove all {`${view}`} from your archive?</p>
+              <div className='mt-[10px] flex'>
+                <button 
+                  className='border p-[8px] rounded-[10px] bg-[green] text-[white] text-[14px] cursor-pointer'
+                  onClick={view === 'notes' ? handleUnarchiveAllNotes: handleUnarchiveAllFolders}
+                  disabled={loadingAction}
                 >
-                  {`Remove all ${view} from archive`}
+                  {loadingAction ? <Loader className='animate-spin'/> : 'Remove'}
+                </button>
+                <button 
+                  className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
+                  onClick={()=>setOpenUnarchiveAllModal(false)}
+                > 
+                  Cancel
                 </button>
               </div>
+              
             </div>
-      
-            <div className="flex justify-around lg:justify-start lg:space-x-12 border-b mb-6">
-              <button
-                className={`pb-2 ${view === "notes" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
-                onClick={() => setView("notes")}
-              >
-                Notes
-              </button>
-              <button
-                className={`pb-2 ${view === "folders" ? "border-b-2 border-blue-600" : "text-gray-500"} cursor-pointer`}
-                onClick={() => setView("folders")}
-              >
-               Folders
-              </button>
-            </div>
-              <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6'>
-                {view === "notes" ? (  
-                  notes.map((note, index)=>{
-                    return(
-                      <Card
-                        type='note'
-                        backgroundColor={note.themeColor}
-                        name={note.title}
-                        noteDescription={note.noteContent}
-                        date={note.createdAt}
-                        key={index}
-                        className='mb-4'
-                        pageRedirect={`/notes/${note.id}`}
-                        menuOptions={
-                          <MenuOptions 
-                            id={note.id} 
-                            handleUnarchive={handleUnarchiveIndividualNote} 
-                            loadingAction={loadingAction}
-                            refetchItem={fetchArchivedNotes}
-                            type='note'
-                          />
-                        }
-                      />
-                    )
-                  })
-                ) : (       
-                  folders.map((folder, index)=>{
-                    return(
-                      <Card
-                        type='folder'
-                        backgroundColor={folder.themeColor}
-                        name={folder.name}
-                        folderIconColor={folder.iconColor}
-                        date={folder.createdAt}
-                        key={index}
-                        pageRedirect={`/notes/folders/${folder.id}`}
-                        menuOptions={
-                          <MenuOptions 
-                            id={folder.id} 
-                            handleUnarchive={handleUnarchiveIndividualFolder} 
-                            handleOpenFolderModal={handleOpenFolderModal}
-                            refetchItem={fetchArchivedFolders}
-                            loadingAction={loadingAction}
-                            type='folder'
-                          />
-                        }
-                      />
-                    )
-                  })
-                )}
-              </div>
-           
-      
-            {/* 4️⃣ Empty State */}
-            {view === "notes" && notes.length === 0 && (
-              <div className="text-center py-20 text-gray-500">
-                No deleted notes here — you’re all caught up!
-              </div>
-            )}
-            {view === "folders" && folders.length === 0 && (
-              <div className="text-center py-20 text-gray-500">
-                No deleted folders here — you’re all caught up!
-              </div>
-            )}
-          </main>
-      </div>
-      {
-        openFolderModal &&
-          <Modal
-            title='Create Folder'
-            children={
-              <CreateFolder  
-                openFolderModal={openFolderModal} 
-                setOpenFolderModal={setOpenFolderModal} 
-                folderId={folderId} 
-                editMode={editMode}  
-                />
-              }
-            onClose={()=>setOpenFolderModal(false)}
-          />
+            
+          }
+          onClose={()=>setOpenUnarchiveAllModal(false)}
+        />
       }
-    </section>
-    
-    )
+  </section>
+  
+  )
 }
 
 export const MenuOptions = (

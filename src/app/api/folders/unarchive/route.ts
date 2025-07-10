@@ -1,22 +1,19 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../../auth/[...nextauth]/options";
-import prismadb from "../../../../../lib/prismadb";
+import { authOptions } from "../../auth/[...nextauth]/options";
+import prismadb from "../../../../lib/prismadb";
 
 
-export async function PUT(
-    req: NextRequest,
-  ) {
+
+export async function PUT() {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   
     await prismadb.folder.updateMany({
-      data: { trash: false },
-     
+        data: { archived: false },  
     });
   
     return NextResponse.json({ success: true });
-}
-  
+  }
