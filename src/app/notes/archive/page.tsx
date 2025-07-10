@@ -6,6 +6,8 @@ import { FoldersType, Note } from "../page"
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { Loader } from "lucide-react";
+import { useRouter} from "next/navigation"
+import CreateFolder from "@components/components/NewFolder";
 
  
 export default function Archive() {
@@ -18,6 +20,11 @@ export default function Archive() {
   const [openDeleteAllModal, setOpeDeleteAllModal] = useState(false)
 
   const [view, setView] = useState<'notes'|'folders'>('notes')
+
+  const [editMode, setEditMode] = useState(false)
+
+  const [folderId, setFolderId] = useState('')
+  const [openFolderModal, setOpenFolderModal] = useState(false)
 
   const fetchArvhivedNotes = async () => {
     // setLoading(true)
@@ -69,6 +76,13 @@ export default function Archive() {
     } finally {
       setLoadingAction(true)
     }
+  }
+
+  const handleOpenFolderModal = (id:string) =>{
+    setFolderId(id)
+    setEditMode(true)
+    setOpenFolderModal(true)
+   
   }
 
   const handleRestoreAllNotes = async() => {
@@ -202,7 +216,15 @@ export default function Archive() {
                         key={index}
                         className='mb-4'
                         pageRedirect={`/notes/${note.id}`}
-                        menuOptions={<MenuOptions id={note.id} handleUnarchive={handleUnarchiveIndividualNote} handleDelete={handlePermanentDeleteSingleNote} loadingAction={loadingAction} />}
+                        menuOptions={
+                          <MenuOptions 
+                            id={note.id} 
+                            handleUnarchive={handleUnarchiveIndividualNote} 
+                            handleDelete={handlePermanentDeleteSingleNote} 
+                            loadingAction={loadingAction}
+                            type='note'
+                          />
+                        }
                       />
                     )
                   })
@@ -217,7 +239,17 @@ export default function Archive() {
                         date={folder.createdAt}
                         key={index}
                         pageRedirect={`/notes/folders/${folder.id}`}
-                        menuOptions={<MenuOptions id={folder.id} handleUnarchive={handleUnarchiveIndividualFolder} handleDelete={handlePermanentDeleteSingleFolder}  loadingAction={loadingAction}  />}
+                        menuOptions={
+                          <MenuOptions 
+                            id={folder.id} 
+                            handleUnarchive={handleUnarchiveIndividualFolder} 
+                            handleOpenFolderModal={handleOpenFolderModal}
+                            // refetchFolders={fetchArchivedFolders}
+                            handleDelete={handlePermanentDeleteSingleFolder}  
+                            loadingAction={loadingAction}
+                            type='folder'
+                          />
+                        }
                       />
                     )
                   })
@@ -296,13 +328,37 @@ export default function Archive() {
             onClose={()=>setOpeDeleteAllModal(false)}
           />
       }
+      {
+        openFolderModal &&
+          <Modal
+            title='Create Folder'
+            children={<CreateFolder  openFolderModal={openFolderModal} setOpenFolderModal={setOpenFolderModal} folderId={folderId} editMode={editMode}  />}
+            onClose={()=>setOpenFolderModal(false)}
+          />
+      }
     </section>
     
     )
 }
 
-export const MenuOptions = ({id, handleUnarchive, loadingAction, handleDelete}:{id:string, handleUnarchive: (id: string) => Promise<void>, loadingAction: boolean, handleDelete: (id: string) => Promise<void>}) => {
-
+export const MenuOptions = (
+  {
+    id, 
+    handleUnarchive, 
+    loadingAction, 
+    handleDelete, 
+    type,
+    handleOpenFolderModal,
+  }:{
+    id:string, 
+    handleUnarchive: (id: string) => Promise<void>, 
+    loadingAction: boolean, 
+    handleDelete: (id: string) => Promise<void>, 
+    type:'note' | 'folder',
+    handleOpenFolderModal?: (id: string) => void,   
+  }
+) => {
+  const router = useRouter()
   const [action, setAction] = useState('')
   
   const handleUnarchiveItem = () =>{
@@ -310,6 +366,15 @@ export const MenuOptions = ({id, handleUnarchive, loadingAction, handleDelete}:{
     handleUnarchive(id)
   }
 
+  const handleEditItem = () => {
+    setAction('edit')
+    if(type ==='note'){
+      router.push(`/notes/add-new?id=${id}`)
+    }else{
+      handleOpenFolderModal && handleOpenFolderModal(id)
+    } 
+  }
+  
   const handleDeleteItem = () => {
     setAction('delete')
     handleDelete(id)
@@ -319,7 +384,7 @@ export const MenuOptions = ({id, handleUnarchive, loadingAction, handleDelete}:{
     <div className='p-[15px]'>
       <ul>
         <li className='p-2' onClick={handleUnarchiveItem}>{(loadingAction && action === 'unarchive') ? 'wait...' : 'Unarchive'}</li>
-        <li className='p-2' onClick={handleDeleteItem}>{(loadingAction && action ===' delete') ? 'wait...' : 'Edit'}</li>
+        <li className='p-2' onClick={handleEditItem}>{(loadingAction && action ===' edit') ? 'wait...' : 'Edit'}</li>
         <li className='p-2' onClick={handleDeleteItem}>{(loadingAction && action ===' delete') ? 'wait...' : 'Delete'}</li>
       </ul>
     </div>
