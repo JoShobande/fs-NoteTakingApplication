@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../../../auth/[...nextauth]/options";
-import prismadb from "../../../../../../lib/prismadb";
+import { authOptions } from "../../../auth/[...nextauth]/options";
+import prismadb from "../../../../../lib/prismadb";
 
 
 export async function PUT(
@@ -22,7 +22,7 @@ export async function PUT(
   
     await prismadb.notes.update({
       where: { id: params.id },
-      data: { deletedAt: null, trash: false },
+      data: { archived: false },
      
     });
   
