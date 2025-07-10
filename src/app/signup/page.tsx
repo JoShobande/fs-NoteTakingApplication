@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const [firstName, setFirstName] = useState("");
@@ -9,6 +11,7 @@ export default function SignUpPage() {
   const [email,     setEmail]     = useState("");
   const [password,  setPassword]  = useState("");
   const [confirm,   setConfirm]   = useState("");
+  const [loading, setLoading] = useState(false)
 
   const [errors, setErrors] = useState<Record<string,string>>({});
   const [showPwd, setShowPwd]     = useState(false);
@@ -31,28 +34,33 @@ export default function SignUpPage() {
     e.preventDefault();
     setApiError("");
     if (!validate()) return;
-
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ firstName, lastName, email, password }),
-    });
-
-    if (res.ok) {
+    try{
+      setLoading(true)
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        toast.error(body.message || "Sign-up failed")
+        return;
+      }
       setModalOpen(true);
       setFirstName('')
       setLastName('')
       setEmail('')
       setPassword('')
       setConfirm('')
-    } else {
-      const body = await res.json();
-      setApiError(body.message || "Sign-up failed");
+    }catch(err){
+      setApiError(err.message|| "Sign-up failed");
+    }finally{
+      setLoading(false)
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen  bg-gray-100 px-4">
+    <div className="grid place-items-center h-[800px] xl:h-screen bg-gray-100 px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-4"
@@ -113,7 +121,7 @@ export default function SignUpPage() {
           <button
             type="button"
             onClick={() => setShowPwd(v => !v)}
-            className="absolute inset-y-0 right-3 top-9 text-gray-500"
+            className="absolute inset-y-0 right-3 top-6 text-gray-500"
           >
             {showPwd ? "🙈" : "👁️"}
           </button>
@@ -133,7 +141,7 @@ export default function SignUpPage() {
           <button
             type="button"
             onClick={() => setShowConf(v => !v)}
-            className="absolute inset-y-0 right-3 top-9 text-gray-500"
+            className="absolute inset-y-0 right-3 top-6 text-gray-500"
           >
             {showConf ? "🙈" : "👁️"}
           </button>
@@ -144,11 +152,22 @@ export default function SignUpPage() {
 
         <button
           type="submit"
-          className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+          className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition grid place-items-center"
+          disabled={loading}
         >
-          Sign Up
+          {
+            loading ? <Loader className='animate-spin'/> : 'Sign Up'
+          }
         </button>
+        <p className="mt-6 text-center text-gray-600">
+          Already have an account?{" "}
+          <Link href="/signin" className="text-blue-600 hover:underline">
+            Sign In
+          </Link>
+        </p>
       </form>
+     
+      
 
       {/* ✅ Success Modal */}
       {modalOpen && (
@@ -162,6 +181,8 @@ export default function SignUpPage() {
             >
               Go to Sign In
             </Link>
+
+            <button className='ml-[5px] cursor-pointer' onClick={()=>setModalOpen(false)}>Cancel</button>
           </div>
         </div>
       )}
