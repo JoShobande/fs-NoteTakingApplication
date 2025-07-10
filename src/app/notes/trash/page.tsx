@@ -12,9 +12,10 @@ export default function Trash() {
 
   const [notes, setNotes] = useState<Note[]>([])
   const [folders, setFolders] = useState<FoldersType[]>([])
-  const [loadingRestore, setLoadingRestore] = useState(false)
+  const [loadingAction, setLoadingAction] = useState(false)
   
   const [openRestoreAllModal, setOpenRestoreAllModal] = useState(false)
+  const [openDeleteAllModal, setOpeDeleteAllModal] = useState(false)
 
   const [view, setView] = useState<'notes'|'folders'>('notes')
 
@@ -46,55 +47,110 @@ export default function Trash() {
 
   const handleRestoreIndividualNote = async(id:string) => {
     try {
-      setLoadingRestore(true)
+      setLoadingAction(true)
       await fetch(`/api/notes/trash/restore/${id}`, {method:'PUT'})
       toast.success('Successfully restored Note')
       fetchDeletedNotes()
     } catch (err: any) {
       console.error(err)
     } finally {
-      setLoadingRestore(false)
-    }
-  }
-
-  const handleRestoreAllNotes = async() => {
-    try {
-      setLoadingRestore(true)
-      await fetch(`/api/notes/trash/restore`, {method:'PUT'})
-      toast.success('Successfully restored all Note')
-      fetchDeletedNotes()
-    } catch (err: any) {
-      console.error(err)
-    } finally {
-      setLoadingRestore(false)
+      setLoadingAction(false)
     }
   }
 
   const handleRestoreIndividualFolder = async(id:string) => {
     try {
-      setLoadingRestore(true)
+      setLoadingAction(true)
       await fetch(`/api/folders/trash/restore/${id}`, {method:'PUT'})
       toast.success('Successfully restored folder')
       fetchDeletedFolders()
     } catch (err: any) {
       console.error(err)
     } finally {
-      setLoadingRestore(true)
+      setLoadingAction(true)
+    }
+  }
+
+  const handleRestoreAllNotes = async() => {
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/notes/trash/restore`, {method:'PUT'})
+      toast.success('Successfully restored all Note')
+      fetchDeletedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
     }
   }
 
   const handleRestoreAllFolders = async() => {
     try {
-      setLoadingRestore(true)
+      setLoadingAction(true)
       await fetch(`/api/folders/trash/restore`, {method:'PUT'})
       toast.success('Successfully restored all Note')
       fetchDeletedFolders()
     } catch (err: any) {
       console.error(err)
     } finally {
-      setLoadingRestore(false)
+      setLoadingAction(false)
     }
   }
+  
+  const handlePermanentDeleteNote = async() =>{
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/notes/permanentDelete`, {method:'DELETE'})
+      toast.success('Successfully emptied trash')
+      fetchDeletedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
+  const handlePermanentDeleteFolder = async() =>{
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/folders/permanentDelete`, {method:'DELETE'})
+      toast.success('Successfully emptied trash')
+      fetchDeletedFolders()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
+   
+  const handlePermanentDeleteSingleNote = async(id:string) =>{
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/notes/permanentDelete/${id}`, {method:'DELETE'})
+      toast.success('Successfully emptied trash')
+      fetchDeletedNotes()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
+  const handlePermanentDeleteSingleFolder = async(id:string) =>{
+    try {
+      setLoadingAction(true)
+      await fetch(`/api/folders/permanentDelete/${id}`, {method:'DELETE'})
+      toast.success('Successfully emptied trash')
+      fetchDeletedFolders()
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setLoadingAction(false)
+    }
+  }
+
+
 
   useEffect(()=>{
     fetchDeletedNotes()
@@ -117,7 +173,7 @@ export default function Trash() {
                   Restore All
                 </button>
                 <button
-                  // onClick={emptyTrash}
+                  onClick={()=>setOpeDeleteAllModal(true)}
                   className="px-4 py-2 bg-red-600 text-white text-[14px] rounded hover:bg-red-700 rounded-[20px] cursor-pointer"
                 >
                   Empty Trash
@@ -152,7 +208,7 @@ export default function Trash() {
                         key={index}
                         className='mb-4'
                         pageRedirect={`/notes/${note.id}`}
-                        menuOptions={<MenuOptions id={note.id} handleRestore={handleRestoreIndividualNote} loadingRestore={loadingRestore} />}
+                        menuOptions={<MenuOptions id={note.id} handleRestore={handleRestoreIndividualNote} handleDelete={handlePermanentDeleteSingleNote} loadingAction={loadingAction} />}
                       />
                     )
                   })
@@ -167,7 +223,7 @@ export default function Trash() {
                         date={folder.createdAt}
                         key={index}
                         pageRedirect={`/notes/folders/${folder.id}`}
-                        menuOptions={<MenuOptions id={folder.id} handleRestore={handleRestoreIndividualFolder} loadingRestore={loadingRestore}  />}
+                        menuOptions={<MenuOptions id={folder.id} handleRestore={handleRestoreIndividualFolder} handleDelete={handlePermanentDeleteSingleFolder}  loadingAction={loadingAction}  />}
                       />
                     )
                   })
@@ -199,9 +255,9 @@ export default function Trash() {
                   <button 
                     className='border p-[8px] rounded-[10px] bg-[green] text-[white] text-[14px] cursor-pointer'
                     onClick={view === 'notes' ? handleRestoreAllNotes: handleRestoreAllFolders}
-                    disabled={loadingRestore}
+                    disabled={loadingAction}
                   >
-                    {loadingRestore ? <Loader className='animate-spin'/> : 'Restore'}
+                    {loadingAction ? <Loader className='animate-spin'/> : 'Restore'}
                   </button>
                   <button 
                     className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
@@ -217,21 +273,59 @@ export default function Trash() {
             onClose={()=>setOpenRestoreAllModal(false)}
           />
       }
+       {
+        openDeleteAllModal &&
+        <Modal
+            title={`Delete all ${view}`}
+            children={
+              <div>
+                <p>Are you sure you want to permanently all {`${view}`}?</p>
+                <div className='mt-[10px] flex'>
+                  <button 
+                    className='border p-[8px] rounded-[10px] bg-[red] text-[white] text-[14px] cursor-pointer'
+                    onClick={view === 'notes' ? handlePermanentDeleteNote: handlePermanentDeleteFolder}
+                    disabled={loadingAction}
+                  >
+                    {loadingAction ? <Loader className='animate-spin'/> : 'Delete'}
+                  </button>
+                  <button 
+                    className='ml-[10px] border p-[8px] rounded-[10px] bg-blue-700 text-[white] text-[14px] cursor-pointer'
+                    onClick={()=>setOpeDeleteAllModal(false)}
+                  > 
+                    Cancel
+                  </button>
+                </div>
+                
+              </div>
+              
+            }
+            onClose={()=>setOpeDeleteAllModal(false)}
+          />
+      }
     </section>
     
     )
 }
 
-export const MenuOptions = ({id, handleRestore, loadingRestore}:{id:string, handleRestore: (id: string) => Promise<void>, loadingRestore: boolean}) => {
+export const MenuOptions = ({id, handleRestore, loadingAction, handleDelete}:{id:string, handleRestore: (id: string) => Promise<void>, loadingAction: boolean, handleDelete: (id: string) => Promise<void>}) => {
 
+  const [action, setAction] = useState('')
+  
   const handleRestoreItem = () =>{
+    setAction('restore')
     handleRestore(id)
+  }
+
+  const handleDeleteItem = () => {
+    setAction('delete')
+    handleDelete(id)
   }
 
   return(
     <div className='p-[15px]'>
       <ul>
-        <li className='p-2' onClick={handleRestoreItem}>{loadingRestore ? 'wait...' : 'Restore'}</li>
+        <li className='p-2' onClick={handleRestoreItem}>{(loadingAction && action === 'restore') ? 'wait...' : 'Restore'}</li>
+        <li className='p-2' onClick={handleDeleteItem}>{(loadingAction && action ===' delete') ? 'wait...' : 'Delete Permanently'}</li>
       </ul>
     </div>
   )
