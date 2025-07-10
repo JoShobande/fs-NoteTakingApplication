@@ -17,7 +17,7 @@ export default function SignUpPage() {
   const [showPwd, setShowPwd]     = useState(false);
   const [showConf, setShowConf]   = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [apiError, setApiError]   = useState("");
+  
 
   const validate = () => {
     const e: Record<string,string> = {};
@@ -32,7 +32,6 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setApiError("");
     if (!validate()) return;
     try{
       setLoading(true)
@@ -53,7 +52,7 @@ export default function SignUpPage() {
       setPassword('')
       setConfirm('')
     }catch(err){
-      setApiError(err.message|| "Sign-up failed");
+      toast.error(err.message || "Sign-up failed")
     }finally{
       setLoading(false)
     }
@@ -68,10 +67,6 @@ export default function SignUpPage() {
         <h1 className="text-3xl font-semibold text-gray-900 text-center">
           Create Account
         </h1>
-
-        {apiError && (
-          <p className="text-red-600 text-sm text-center">{apiError}</p>
-        )}
 
         <div>
           <label className="block text-gray-700">First Name</label>

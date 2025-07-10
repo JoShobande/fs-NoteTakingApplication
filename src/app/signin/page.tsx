@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [apiError, setApiError] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter();
 
@@ -23,10 +25,12 @@ export default function SignInPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     if (!validate()) return;
 
     try {
+      setLoading(true)
       const res = await signIn("credentials", {
         redirect: false,
         email,
@@ -34,19 +38,21 @@ export default function SignInPage() {
       });
 
       if (res?.error) {
-        setApiError(res.error || "Invalid credentials");
+        toast.error("Invalid credentials")
         return;
       }
       router.push("/notes");
     } catch (err) {
       console.error(err);
-      setApiError("Something went wrong, please try again later");
+      toast.error("Something went wrong, please try again later");
+    }finally{
+      setLoading(false)
     }
   };
 
   return (
     <div className="grid place-items-center bg-gray-100 h-[800px] xl:h-screen px-4">
-      {apiError && (
+      {/* {apiError && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full space-y-4">
             <h2 className="text-xl font-semibold text-red-600">Error</h2>
@@ -59,7 +65,7 @@ export default function SignInPage() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-semibold text-gray-900 mb-6 text-center">
@@ -106,9 +112,11 @@ export default function SignInPage() {
 
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+            className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition grid place-items-center"
           >
-            Sign In
+            {
+              loading ? <Loader className='animate-spin'/> : 'Sign In'
+            }
           </button>
         </form>
         <p className="mt-6 text-center text-gray-600">
