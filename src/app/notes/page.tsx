@@ -82,7 +82,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-10">
+      <div className="flex flex-col items-center justify-center py-10 h-full">
         <Loader2 className="animate-spin h-[80px] w-[80px] mr-2 text-blue-600" />
         <span>Loading notes…</span>
       </div>
@@ -117,9 +117,9 @@ export default function Home() {
            />
         </div>
       </div>
-      <div className='lg:mt-[50px] flex flex-col items-center lg:block'>
+      <div className='lg:mt-[50px] flex flex-col items-center lg:block px-[40px] lg:px-0'>
         <h1 className='hidden lg:block text-[25px] mb-[20px] font-[500]'>My Notes</h1>
-        <div className=' lg:flex lg:space-x-8 items-center flex-wrap '>
+        <div className='flex justify-between lg:space-x-8 items-center flex-wrap '>
            {
              notes?.map((note, index)=>{
                return(
@@ -130,7 +130,7 @@ export default function Home() {
                     noteDescription={note.noteContent}
                     date={note.createdAt}
                     key={index}
-                    className='mb-4'
+                    className='mb-4 w-[300px]'
                     pageRedirect={`/notes/${note.id}`}
                     menuOptions={<MenuOptions id={note.id} refetchNotes={fetchNotes}/>}
                  />
