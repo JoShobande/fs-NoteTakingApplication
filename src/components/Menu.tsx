@@ -4,23 +4,24 @@ import Image from "next/image";
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 
 const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     
     const [openMobileMenu, setOpenMobileMenu] = useState(false)
     const router = useRouter();
+    const pathname = usePathname();  
 
     const handleSignOut = async () => {
-      // This will clear the NextAuth session cookie, then redirect
       await signOut({
-        redirect: false,          // we’ll handle the redirect manually
+        redirect: false,          
       });
-      router.push("/signin");     // send the user back to your sign-in page
+      router.push("/signin");    
     };
 
     const navItems = [
+        { label: "Home",   icon: "/home.png", href: "/notes"   },
         { label: "Add New",   icon: "/new.png", href: "/notes/add-new"   },
         { label: "Archive",  icon: "/archive.png", href: "/notes/archive"  },
         { label: "Folders",   icon: "/folder.png", href: "/notes/folders" },
@@ -28,9 +29,9 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
     ];
 
     return(
-        <section>
-            <div className='bg-gray-100'>
-                <header className="h-[100px] bg-white flex items-center py-[20px]  justify-between lg:justify-start shadow-sm">
+        <section className="flex flex-col h-screen overflow-hidden">
+            {/* <div className='relative bg-gray-100 h-screen '> */}
+                <header className="flex-shrink-0 h-[100px] bg-white flex items-center justify-between lg:justify-start shadow-sm ">
                     <Link className='w-[100px] h-[100px] lg:w-[200px] lg:h-[200px] relative lg:mt-[20px]' href='/notes'>
                         <Image
                             src='/logoNoText.png'
@@ -63,13 +64,14 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                         <div className='w-[30px] h-[5px] rounded-[8px] bg-[grey] mb-[1px]'/>
                     </div>
                 </header>
-                <div className='block lg:flex'>
+                <div className='flex flex-1 overflow-hidden'>
                     <aside 
                         className={`
-                            fixed inset-y-0 right-0 bg-white/95  z-50 lg:z-0
-                            w-[250px]  transition-transform duration-300 ease-in-out shadow-lg                      
+                            fixed inset-y-0 right-0 transform transition-transform duration-300 ease-in-out
+                            bg-white/95 shadow-lg z-50 lg:z-0
+                            w-56
                             ${openMobileMenu ? "translate-x-0" : "translate-x-full"}
-                            lg:relative lg:translate-x-0 lg:inset-auto lg:w-64 lg:block
+                            lg:relative lg:translate-x-0 lg:inset-auto
                         `}
                     >
 
@@ -78,39 +80,61 @@ const Menu = ({currentPage}:{currentPage?:ReactNode}) => {
                                 ✕
                             </button>
                         </div>
-                        <nav className="xl:pl-[60px] pt-[40px]">
+                        <nav className=" pl-[20px] pt-[40px]">
                             <ul className="space-y-6">
-                                {navItems.map(({ label, icon, href }) => (
-                                    <li key={href}>
-                                        <Link
-                                            href={href}
-                                            className="flex items-center space-x-3 px-4 py-2 
-                                                    text-gray-900 hover:bg-gray-100 rounded"
-                                        >
-                                            <Image
-                                                src={icon}
-                                                alt={`${label} icon`}
-                                                width={20}
-                                                height={20}
-                                                className="flex-shrink-0"
-                                            />
-                                            <span>{label}</span>
-                                        </Link>
-                                    </li>
-                                ))}
-                                <li onClick={handleSignOut} className='cursor-pointer'>Logout</li>
+                                {navItems.map(({ label, icon, href }) => {
+                                    const isActive = pathname === href 
+                                    return(
+                                        <li key={href}>
+                                            <Link
+                                                href={href}
+                                                className={`flex items-center space-x-3 px-4 py-2 
+                                                        text-gray-900 hover:bg-gray-100 rounded 
+                                                        path 
+                                                        ${isActive
+                                                            ? "bg-blue-100 font-medium text-blue-700"
+                                                            : "text-gray-900 hover:bg-gray-100"}
+                                                    `}
+                                            >
+                                                <Image
+                                                    src={icon}
+                                                    alt={`${label} icon`}
+                                                    width={20}
+                                                    height={20}
+                                                    className="flex-shrink-0"
+                                                />
+                                                <span>{label}</span>
+                                            </Link>
+                                        </li>
+                                    )
+                                })}
+                                <li onClick={handleSignOut} className='absolute bottom-[50px] flex space-x-3 px-4 py-2 cursor-pointer'>
+                                    <Image
+                                        src={'/logout.png'}
+                                        alt={`logout`}
+                                        width={20}
+                                        height={20}
+                                        className="flex-shrink-0"
+                                    />
+                                    <span>Logout</span>
+                                </li>
                             </ul>
                         </nav>
                     </aside>
-                    <div className="flex-1 lg:-ml-4 -mt-2 z-10">
-                        <div className="rounded-tl-[30px] overflow-hidden">
-                            <main className="px-4 lg:px-8 py-6 bg-gray-200 ">
-                                {currentPage}
-                            </main>
-                        </div>
-                    </div>   
+                    <div className="flex-1 h-full overflow-hidden lg:-ml-6  z-10">
+                        <main
+                            className="
+                            h-full overflow-auto bg-gray-200
+                            lg:rounded-tl-[30px] 
+                            px-4 lg:px-8 py-6 
+                                
+                            "
+                        >
+                            {currentPage}
+                        </main>
+                    </div>
                 </div>
-            </div> 
+            {/* </div>  */}
         </section>
     )
 }

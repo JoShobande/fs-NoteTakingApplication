@@ -82,7 +82,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 ">
+      <div className="flex flex-col items-center justify-center py-10">
         <Loader2 className="animate-spin h-[80px] w-[80px] mr-2 text-blue-600" />
         <span>Loading notes…</span>
       </div>
@@ -90,7 +90,7 @@ export default function Home() {
   }
 
   return (
-    <section className="">
+    <section className="h-full">
       <div className='hidden lg:block'>
         <h1 className='text-[25px] mb-[20px] font-[500]'>Recent Folders</h1>
         <div className='flex space-x-8 items-center'>
