@@ -175,12 +175,14 @@ export default function Trash() {
                 <button
                   onClick={()=>setOpenRestoreAllModal(true)}
                   className="px-4 py-2 bg-green-600 text-white text-[14px] rounded hover:bg-green-700 rounded-[20px] cursor-pointer"
+                  disabled={view === 'folders' ? folders.length === 0 : notes.length === 0}
                 >
                   Restore All
                 </button>
                 <button
                   onClick={()=>setOpeDeleteAllModal(true)}
                   className="px-4 py-2 bg-red-600 text-white text-[14px] rounded hover:bg-red-700 rounded-[20px] cursor-pointer"
+                  disabled={view === 'folders' ? folders.length === 0 : notes.length === 0}
                 >
                   Empty Trash
                 </button>

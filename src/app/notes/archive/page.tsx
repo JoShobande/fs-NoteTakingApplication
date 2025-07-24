@@ -135,6 +135,7 @@ export default function Archive() {
               <button
                 onClick={()=>setOpenUnarchiveAllModal(true)}
                 className="text-[12px] px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-[20px] cursor-pointer"
+                disabled={view === 'folders' ? folders.length === 0 : notes.length === 0}
               >
                 {`Remove all ${view} from archive`}
               </button>
