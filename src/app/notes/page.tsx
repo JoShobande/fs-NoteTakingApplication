@@ -11,6 +11,7 @@ import { FolderMenuOptions } from "./folders/page";
 import CreateFolder from "@components/components/NewFolder";
 
 
+
 export type Note = {
   id: string;
   title: string;
@@ -33,6 +34,8 @@ export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [folders, setFolders] = useState<FoldersType[]>([]);
   const[loading, setLoading] = useState(false)
+
+  const router = useRouter();
 
   const [openFolderModal, setOpenFolderModal] = useState(false)
 
@@ -133,6 +136,17 @@ export default function Home() {
              })
            } 
         </div>
+        {notes.length === 0 && (
+          <div className="text-center py-20 text-gray-500">
+            <p>You have no Notes at the moment! Click to start writing your own Notes!</p>
+            <button 
+              className='border p-2 rounded-[8px] mt-[15px] bg-blue-600 text-white text-[14px] cursor-pointer hover:bg-blue-700'
+              onClick={()=>router.push("/notes/add-new")}
+            >
+              Create Note
+            </button>
+          </div>
+        )}
       </div>
       {
         openFolderModal &&

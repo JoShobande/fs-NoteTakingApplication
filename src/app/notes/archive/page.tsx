@@ -128,13 +128,13 @@ export default function Archive() {
   return (
     <section className="min-h-screen">
       <div className="flex">
-        <main className="flex-1 p-8">
+        <main className="flex-1 py-8 px-2">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-semibold">Archive</h1>
             <div className="space-x-2">
               <button
                 onClick={()=>setOpenUnarchiveAllModal(true)}
-                className="px-4 py-2 bg-green-600 text-white text-[14px] rounded hover:bg-green-700 rounded-[20px] cursor-pointer"
+                className="text-[12px] px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-[20px] cursor-pointer"
               >
                 {`Remove all ${view} from archive`}
               </button>

@@ -75,6 +75,11 @@ export default function Folders() {
           })
         }
       </div>
+      {folders.length === 0 && (
+          <div className="text-center py-20 text-gray-500">
+            <p>You have no Folders at the moment!</p>
+          </div>
+        )}
       {
         openFolderModal &&
         <Modal

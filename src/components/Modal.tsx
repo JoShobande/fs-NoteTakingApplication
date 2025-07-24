@@ -13,7 +13,7 @@ export default function Modal({ title, children, onClose }: ModalProps) {
     // backdrop
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       {/* panel */}
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+      <div className="bg-white rounded-2xl shadow-lg w-[90%] md:w-full max-w-md p-6 relative">
         {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
         <div className="mb-6">{children}</div>
         <button
