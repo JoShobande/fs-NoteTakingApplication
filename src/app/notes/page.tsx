@@ -3,7 +3,7 @@
 import Card from "@components/components/Card";
 import NewItem from "@components/components/NewItem";
 import {  useEffect, useState } from "react";
-import { Loader2 } from 'lucide-react' 
+import LoadingState from '../../components/LoadingState'
 import { useRouter} from "next/navigation"
 import { toast } from "sonner";
 import Modal from '../../components/Modal'
@@ -81,12 +81,7 @@ export default function Home() {
 
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10 h-full">
-        <Loader2 className="animate-spin h-[80px] w-[80px] mr-2 text-blue-600" />
-        <span>Loading notes…</span>
-      </div>
-    )
+    return <LoadingState description='Loading Notes'/>
   }
 
   return (

@@ -8,6 +8,7 @@ import Modal from "@components/components/Modal";
 import { Loader } from "lucide-react";
 import { useRouter} from "next/navigation"
 import CreateFolder from "@components/components/NewFolder";
+import LoadingState from "@components/components/LoadingState";
 
  
 export default function Archive() {
@@ -15,6 +16,7 @@ export default function Archive() {
   const [notes, setNotes] = useState<Note[]>([])
   const [folders, setFolders] = useState<FoldersType[]>([])
   const [loadingAction, setLoadingAction] = useState(false)
+  const [loading, setLoading] = useState(false)
   
   const [openUnarchiveAllModal, setOpenUnarchiveAllModal] = useState(false)
  
@@ -26,7 +28,7 @@ export default function Archive() {
   const [openFolderModal, setOpenFolderModal] = useState(false)
 
   const fetchArchivedNotes = async () => {
-    // setLoading(true)
+    setLoading(true)
     try {
       const res = await fetch('/api/notes/archive', {method:'GET'})
       const data = await res.json()
@@ -34,12 +36,12 @@ export default function Archive() {
     } catch (err: any) {
       console.error(err)
     } finally {
-      // setLoading(false)
+      setLoading(false)
     }
   }
 
   const fetchArchivedFolders = async () => {
-    // setLoading(true)
+    setLoading(true)
     try {
       const res = await fetch('/api/folders/archive', {method:'GET'})
       const data = await res.json()
@@ -47,7 +49,7 @@ export default function Archive() {
     } catch (err: any) {
       console.error(err)
     } finally {
-      // setLoading(false)
+      setLoading(false)
     }
   }
 
@@ -116,6 +118,10 @@ export default function Archive() {
     fetchArchivedFolders()
     fetchArchivedNotes()
   },[])
+
+  if (loading) {
+    return <LoadingState description='Loading'/>
+  }
 
 
   
@@ -205,12 +211,12 @@ export default function Archive() {
           {/* 4️⃣ Empty State */}
           {view === "notes" && notes.length === 0 && (
             <div className="text-center py-20 text-gray-500">
-              No deleted notes here — you’re all caught up!
+              No archived notes here — you’re all caught up!
             </div>
           )}
           {view === "folders" && folders.length === 0 && (
             <div className="text-center py-20 text-gray-500">
-              No deleted folders here — you’re all caught up!
+              No archived folders here — you’re all caught up!
             </div>
           )}
         </main>

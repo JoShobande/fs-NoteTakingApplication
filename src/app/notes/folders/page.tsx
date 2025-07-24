@@ -7,6 +7,7 @@ import { useRouter} from "next/navigation"
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import CreateFolder from "@components/components/NewFolder";
+import LoadingState from "@components/components/LoadingState";
  
 export default function Folders() {
 
@@ -40,6 +41,10 @@ export default function Folders() {
   useEffect(()=>{
     fetchFolders()
   },[])
+
+  if (loading) {
+    return <LoadingState description='Loading Folders'/>
+  }
   
   return (
     <section>

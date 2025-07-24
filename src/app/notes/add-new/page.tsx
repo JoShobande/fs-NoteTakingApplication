@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSearchParams } from "next/navigation";
+import LoadingState from "@components/components/LoadingState";
 
 export interface NoteProps{
   title:string,
@@ -100,6 +101,14 @@ export default function NewNotePage() {
       handleGetNoteToBeEdited()
     }
   },[editId])
+
+
+  console.log(loadingNoteDetails)
+
+  if (loadingNoteDetails) {
+    return <LoadingState description='Loading Notes Detail'/>
+  }
+
 
   return (
     <form

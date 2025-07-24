@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { NoteProps } from "../add-new/page";
 import { useRouter, useParams } from "next/navigation"
 import Modal from "@components/components/Modal";
+import LoadingState from "@components/components/LoadingState";
 
 export default function NoteDetailPage() {
 
@@ -13,19 +14,23 @@ export default function NoteDetailPage() {
   const [note, setNote] = useState<NoteProps>()
   const [deleteModal, setDeleteModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingNoteDetails, setLoadingNoteDetails] = useState(false)
   const [archiveModal, setArchiveModal] = useState(false)
 
   const router = useRouter()
 
   const handleGetNoteDetails = async() => {
     try {
+      setLoadingNoteDetails(true)
       const res = await fetch(`/api/notes/${noteId}`)
       if (!res.ok) throw new Error('Not authorized')
       const data:NoteProps = await res.json()
       setNote(data)
     } catch (err: any) {
       console.error(err)
-    } 
+    }finally{
+      setLoadingNoteDetails(false)
+    }
   }
 
   const handleDeleteNote = async() => {
@@ -59,7 +64,12 @@ export default function NoteDetailPage() {
   handleGetNoteDetails()
  },[noteId])
 
-  return (
+ if (loadingNoteDetails) {
+  return <LoadingState description='Loading Notes Detail'/>
+}
+
+
+return (
     <div className={`${note?.themeColor} min-h-screen p-6 flex flex-col`}>
       <div className="flex justify-end space-x-4 mb-4">
         <Link
@@ -89,7 +99,7 @@ export default function NoteDetailPage() {
         {note?.title}
       </h1>
 
-       <textarea 
+        <textarea 
           value={note?.noteContent}
           placeholder="Start writing your note..."
           required

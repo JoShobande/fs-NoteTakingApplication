@@ -9,6 +9,7 @@ import { Loader2, Loader } from "lucide-react";
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { MenuOptions } from "../../page";
+import LoadingState from "@components/components/LoadingState";
 
 type Note = {
   id: string;
@@ -76,15 +77,8 @@ export default function FolderDetailPage() {
   const handleEdit    = () => router.push(`/folders/edit/${folderId}`);
 
   if (loading) {
-    return (
-      
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="animate-spin h-12 w-12 text-blue-600" />
-        </div>
-      
-    );
+    return <LoadingState description='Loading Folder Details'/>
   }
-
 
   return (
       <section className={`p-8 min-h-screen ${folder?.themeColor} `}>

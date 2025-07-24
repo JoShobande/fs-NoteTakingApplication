@@ -6,6 +6,7 @@ import { FoldersType, Note } from "../page"
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { Loader } from "lucide-react";
+import LoadingState from "@components/components/LoadingState";
 
  
 export default function Trash() {
@@ -13,6 +14,8 @@ export default function Trash() {
   const [notes, setNotes] = useState<Note[]>([])
   const [folders, setFolders] = useState<FoldersType[]>([])
   const [loadingAction, setLoadingAction] = useState(false)
+  const [loading, setLoading] = useState(false)
+  
   
   const [openRestoreAllModal, setOpenRestoreAllModal] = useState(false)
   const [openDeleteAllModal, setOpeDeleteAllModal] = useState(false)
@@ -20,7 +23,7 @@ export default function Trash() {
   const [view, setView] = useState<'notes'|'folders'>('notes')
 
   const fetchDeletedNotes = async () => {
-    // setLoading(true)
+    setLoading(true)
     try {
       const res = await fetch('/api/notes/trash', {method:'GET'})
       const data = await res.json()
@@ -28,12 +31,12 @@ export default function Trash() {
     } catch (err: any) {
       console.error(err)
     } finally {
-      // setLoading(false)
+      setLoading(false)
     }
   }
 
   const fetchDeletedFolders = async () => {
-    // setLoading(true)
+    setLoading(true)
     try {
       const res = await fetch('/api/folders/trash', {method:'GET'})
       const data = await res.json()
@@ -41,7 +44,7 @@ export default function Trash() {
     } catch (err: any) {
       console.error(err)
     } finally {
-      // setLoading(false)
+      setLoading(false)
     }
   }
 
@@ -158,7 +161,10 @@ export default function Trash() {
   },[])
 
   
-  
+  if (loading) {
+    return <LoadingState description='Loading'/>
+  }
+
     return (
       <section className="min-h-screen">
         <div className="flex">
