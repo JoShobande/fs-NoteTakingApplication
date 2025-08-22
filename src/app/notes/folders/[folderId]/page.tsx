@@ -67,7 +67,9 @@ export default function FolderDetailPage() {
       setLoadingAction(false);
     }
   }
-  const handleEdit    = () => router.push(`/folders/edit/${folderId}`);
+  const handleEdit = () => {
+    
+  }
 
   if (loading) {
     return <LoadingState description='Loading Folder Details'/>

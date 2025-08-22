@@ -87,7 +87,6 @@ export default function Home() {
                   folderIconColor={folder.iconColor}
                   date={folder.createdAt}
                   key={folder.id}
-                  pageRedirect={''}
                   menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
                 />
               )

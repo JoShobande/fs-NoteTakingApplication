@@ -16,7 +16,7 @@ interface cardProps{
     noteDescription?: string,
     time?:string
     className?:string
-    pageRedirect: string
+    pageRedirect?: string
     menuOptions?: ReactNode
 }
 
