@@ -164,7 +164,7 @@ return (
               </div>
               
             }
-            onClose={()=>setDeleteModal(false)}
+            onClose={()=>setArchiveModal(false)}
           />
       }
       

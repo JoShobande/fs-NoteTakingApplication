@@ -133,6 +133,10 @@ const CreateFolder =({
     useEffect(()=>{
         if(editMode){
           handleGetFolderToBeEdited()
+        }else{
+          setName('')
+          setThemeColor(colorOptions[0].value)
+          setSelectedNotes([])
         }
     },[folderId, editMode])
 

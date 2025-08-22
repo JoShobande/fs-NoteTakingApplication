@@ -102,6 +102,7 @@ const Card:React.FC<cardProps> = ({
                     menuOpen &&
                     <DropDown
                         children={menuOptions}
+                        
                     />    
                 }
             </div>

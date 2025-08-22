@@ -123,8 +123,6 @@ export default function Archive() {
     return <LoadingState description='Loading'/>
   }
 
-
-  
   return (
     <section className="min-h-screen">
       <div className="flex">
@@ -158,7 +156,7 @@ export default function Archive() {
           </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6'>
               {view === "notes" ? (  
-                notes.map((note, index)=>{
+                notes.map((note)=>{
                   return(
                     <Card
                       type='note'
@@ -166,7 +164,7 @@ export default function Archive() {
                       name={note.title}
                       noteDescription={note.noteContent}
                       date={note.createdAt}
-                      key={index}
+                      key={note.id}
                       className='mb-4'
                       pageRedirect={`/notes/${note.id}`}
                       menuOptions={
@@ -182,7 +180,7 @@ export default function Archive() {
                   )
                 })
               ) : (       
-                folders.map((folder, index)=>{
+                folders.map((folder)=>{
                   return(
                     <Card
                       type='folder'
@@ -190,7 +188,7 @@ export default function Archive() {
                       name={folder.name}
                       folderIconColor={folder.iconColor}
                       date={folder.createdAt}
-                      key={index}
+                      key={folder.id}
                       pageRedirect={`/notes/folders/${folder.id}`}
                       menuOptions={
                         <MenuOptions 

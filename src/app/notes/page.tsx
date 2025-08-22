@@ -10,8 +10,6 @@ import Modal from '../../components/Modal'
 import { FolderMenuOptions } from "./folders/page";
 import CreateFolder from "@components/components/NewFolder";
 
-
-
 export type Note = {
   id: string;
   title: string;
@@ -34,6 +32,7 @@ export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [folders, setFolders] = useState<FoldersType[]>([]);
   const[loading, setLoading] = useState(false)
+  const[loadingFolders, setLoadingFolders] = useState(false)
 
   const router = useRouter();
 
@@ -57,7 +56,7 @@ export default function Home() {
   }
 
   const fetchFolders = async () => {
-    setLoading(true)
+    setLoadingFolders(true)
     try {
       const res = await fetch('/api/folders', {method:'GET'})
       const data = await res.json()
@@ -65,7 +64,7 @@ export default function Home() {
     } catch (err: any) {
       console.error(err)
     } finally {
-      setLoading(false)
+      setLoadingFolders(false)
     }
   }
 
@@ -83,7 +82,7 @@ export default function Home() {
 
 
 
-  if (loading) {
+  if (loading || loadingFolders) {
     return <LoadingState description='Loading Notes'/>
   }
 
@@ -92,49 +91,49 @@ export default function Home() {
       <div className='hidden lg:block'>
         <h1 className='text-[25px] mb-[20px] font-[500]'>Recent Folders</h1>
         <div className='flex space-x-8 items-center'>
-           {
-             folders?.slice(0, 3).map((folder, index)=>{
-               return(
-                 <Card
-                    type='folder'
-                    backgroundColor={folder.themeColor}
-                    name={folder.name}
-                    folderIconColor={folder.iconColor}
-                    date={folder.createdAt}
-                    key={index}
-                    pageRedirect={''}
-                    menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
-                 />
-               )
-             })
-           }
-           <NewItem 
-              type='folder'
-              openModal={()=>setOpenFolderModal(true)}
+          {
+            folders?.slice(0, 3).map((folder)=>{
+              return(
+                <Card
+                  type='folder'
+                  backgroundColor={folder.themeColor}
+                  name={folder.name}
+                  folderIconColor={folder.iconColor}
+                  date={folder.createdAt}
+                  key={folder.id}
+                  pageRedirect={''}
+                  menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
+                />
+              )
+            })
+          }
+          <NewItem 
+            type='folder'
+            openModal={()=>setOpenFolderModal(true)}
 
-           />
+          />
         </div>
       </div>
       <div className='lg:mt-[50px] flex flex-col items-center lg:block px-[40px] lg:px-0'>
         <h1 className='hidden lg:block text-[25px] mb-[20px] font-[500]'>My Notes</h1>
         <div className='flex justify-between lg:space-x-8 items-center flex-wrap '>
-           {
-             notes?.map((note, index)=>{
-               return(
-                 <Card
-                    type='note'
-                    backgroundColor={note.themeColor}
-                    name={note.title}
-                    noteDescription={note.noteContent}
-                    date={note.createdAt}
-                    key={index}
-                    className='mb-4 w-[300px]'
-                    pageRedirect={`/notes/${note.id}`}
-                    menuOptions={<MenuOptions id={note.id} refetchNotes={fetchNotes}/>}
-                 />
-               )
-             })
-           } 
+          {
+            notes?.map((note)=>{
+              return(
+                <Card
+                  type='note'
+                  backgroundColor={note.themeColor}
+                  name={note.title}
+                  noteDescription={note.noteContent}
+                  date={note.createdAt}
+                  key={note.id}
+                  className='mb-4 w-[300px]'
+                  pageRedirect={`/notes/${note.id}`}
+                  menuOptions={<MenuOptions id={note.id} refetchNotes={fetchNotes}/>}
+                />
+              )
+            })
+          } 
         </div>
         {notes.length === 0 && (
           <div className="text-center py-20 text-gray-500">

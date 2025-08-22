@@ -38,6 +38,12 @@ export default function Folders() {
    
   }
 
+  const handleOpenCreateNewFolder = () =>{
+    setFolderId('')
+    setEditMode(false)
+    setOpenFolderModal(true)
+  }
+
   useEffect(()=>{
     fetchFolders()
   },[])
@@ -51,7 +57,7 @@ export default function Folders() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Folders</h1>
         <button
-          onClick={() => setOpenFolderModal(true)}
+          onClick={handleOpenCreateNewFolder}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
         >
           + New Folder
@@ -59,7 +65,7 @@ export default function Folders() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {
-          folders.map((folder, index)=>{
+          folders.map((folder)=>{
               return(
                 <Card
                   type='folder'
@@ -67,7 +73,7 @@ export default function Folders() {
                   name={folder.name}
                   folderIconColor={folder.iconColor}
                   date={folder.createdAt}
-                  key={index}
+                  key={folder.id}
                   pageRedirect={`/notes/folders/${folder.id}`}
                   menuOptions={<FolderMenuOptions id={folder.id} refetchFolders={fetchFolders} handleOpenFolderModal={handleOpenFolderModal}/>}
               />
