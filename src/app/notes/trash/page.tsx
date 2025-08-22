@@ -2,7 +2,8 @@
 
 import Card from "@components/components/Card"
 import { useEffect, useState } from "react"
-import { FoldersType, Note } from "../page"
+import { FoldersProp} from "../../../interface/folderInterface"
+import { NoteProps} from "../../../interface/NoteInterface"
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { Loader } from "lucide-react";
@@ -11,8 +12,8 @@ import LoadingState from "@components/components/LoadingState";
  
 export default function Trash() {
 
-  const [notes, setNotes] = useState<Note[]>([])
-  const [folders, setFolders] = useState<FoldersType[]>([])
+  const [notes, setNotes] = useState<NoteProps[]>([])
+  const [folders, setFolders] = useState<FoldersProp[]>([])
   const [loadingAction, setLoadingAction] = useState(false)
   const [loading, setLoading] = useState(false)
   

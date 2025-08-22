@@ -9,28 +9,14 @@ import { toast } from "sonner";
 import Modal from '../../components/Modal'
 import { FolderMenuOptions } from "./folders/page";
 import CreateFolder from "@components/components/NewFolder";
+import { NoteProps } from "../../interface/NoteInterface";
+import { FoldersProp } from "@components/interface/folderInterface";
 
-export type Note = {
-  id: string;
-  title: string;
-  noteContent: string;
-  themeColor: string;
-  createdAt: string;
-};
-
-export type FoldersType = {
-  id: string;
-  name: string;
-  notes: string[];
-  themeColor: string;
-  createdAt: string;
-  iconColor:string
-};
 
 
 export default function Home() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [folders, setFolders] = useState<FoldersType[]>([]);
+  const [notes, setNotes] = useState<NoteProps[]>([]);
+  const [folders, setFolders] = useState<FoldersProp[]>([]);
   const[loading, setLoading] = useState(false)
   const[loadingFolders, setLoadingFolders] = useState(false)
 

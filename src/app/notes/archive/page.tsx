@@ -2,19 +2,20 @@
 
 import Card from "@components/components/Card"
 import { useEffect, useState } from "react"
-import { FoldersType, Note } from "../page"
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { Loader } from "lucide-react";
 import { useRouter} from "next/navigation"
 import CreateFolder from "@components/components/NewFolder";
 import LoadingState from "@components/components/LoadingState";
+import { NoteProps } from "@components/interface/NoteInterface";
+import { FoldersProp } from "@components/interface/folderInterface";
 
  
 export default function Archive() {
 
-  const [notes, setNotes] = useState<Note[]>([])
-  const [folders, setFolders] = useState<FoldersType[]>([])
+  const [notes, setNotes] = useState<NoteProps[]>([])
+  const [folders, setFolders] = useState<FoldersProp[]>([])
   const [loadingAction, setLoadingAction] = useState(false)
   const [loading, setLoading] = useState(false)
   

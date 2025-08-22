@@ -3,10 +3,10 @@ import { Edit2, Archive, Trash2, Loader } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { NoteProps } from "../add-new/page";
 import { useRouter, useParams } from "next/navigation"
 import Modal from "@components/components/Modal";
 import LoadingState from "@components/components/LoadingState";
+import { NoteProps } from "@components/interface/NoteInterface";
 
 export default function NoteDetailPage() {
 

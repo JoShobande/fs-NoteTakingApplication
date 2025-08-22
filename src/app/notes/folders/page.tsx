@@ -1,9 +1,8 @@
 'use client'
 
 import Card from "@components/components/Card"
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { FoldersType } from "../page";
-import { useRouter} from "next/navigation"
+import { useEffect, useState } from "react";
+import { FoldersProp } from "@components/interface/folderInterface";
 import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import CreateFolder from "@components/components/NewFolder";
@@ -11,7 +10,7 @@ import LoadingState from "@components/components/LoadingState";
  
 export default function Folders() {
 
-  const [folders, setFolders] = useState<FoldersType[]>([]);
+  const [folders, setFolders] = useState<FoldersProp[]>([]);
   const[loading, setLoading] = useState(false)
   const [openFolderModal, setOpenFolderModal] = useState(false)
   const [editMode, setEditMode] = useState(false)

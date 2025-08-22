@@ -5,13 +5,8 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useSearchParams } from "next/navigation";
 import LoadingState from "@components/components/LoadingState";
+import { NoteProps } from "@components/interface/NoteInterface";
 
-export interface NoteProps{
-  title:string,
-  noteContent:string,
-  themeColor:string,
-  id:string
-}
 
 const colorOptions = [
   { name: "yellow",   value: "yellow",   bg: "bg-[#E8E582]"   },

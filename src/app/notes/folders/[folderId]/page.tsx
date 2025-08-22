@@ -1,4 +1,3 @@
-// src/app/folders/[folderId]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,21 +9,15 @@ import { toast } from "sonner";
 import Modal from "@components/components/Modal";
 import { MenuOptions } from "../../page";
 import LoadingState from "@components/components/LoadingState";
+import { NoteProps } from "@components/interface/NoteInterface";
+import { FoldersProp } from "@components/interface/folderInterface";
 
-type Note = {
-  id: string;
-  title: string;
-  noteContent: string;
-  themeColor: string;
-  createdAt: string;
-};
-type Folder = { id: string; name: string; themeColor: string };
 
 export default function FolderDetailPage() {
   const { folderId } = useParams();
   const router = useRouter();
-  const [folder, setFolder] = useState<Folder | null>(null);
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [folder, setFolder] = useState<FoldersProp | null>(null);
+  const [notes, setNotes] = useState<NoteProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState(false)
   const [loadingAction, setLoadingAction] = useState(false)
