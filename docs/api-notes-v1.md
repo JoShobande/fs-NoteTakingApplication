@@ -74,11 +74,7 @@ Retrieve all notes for the authenticated user sorted by newest first.
 }
 
 
-
-
-
 ```
-
 ### POST /notes
 
 Create a new note for an authenticated user
@@ -97,20 +93,47 @@ Create a new note for an authenticated user
 **Response 201 (Created)**
 ```json
 {
-  "success": true,
-  "data": { "id": 2, "title": "Meeting Notes", "noteContent": "Discussion summary goes here", "themeColor":"bg-[#6CB5DF]" },
+  "data": { 
+      "id": 2, 
+      "title": "Meeting Notes", 
+      "noteContent": "Discussion summary goes here", 
+      "themeColor":"bg-[#6CB5DF]",
+      "folderId": null,
+      "trash": false,
+      "archived": false,
+      "createdAt": "2025-10-13T12:00:00Z",
+      "updatedAt": "2025-10-13T12:00:00Z"
+    },
   "requestId": "def456"
 }
 
-**Response 400 (Validation error)
+```
+
+**Response 400 (Validation error)**
+```json
 {
-  "success": false,
-  "code": "VALIDATION_ERROR",
-  "message": "Title is required",
-  "requestId": "def456"
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Validation failed",
+    "details": [
+      { "path": "themeColor", "message": "Theme color is required" }
+    ]
+  },
+  "requestId": "abc123"
 }
-
+```
+**Response 401 (UnAuthorized)**
+```json
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "You must be logged in to create a note"
+  },
+  "requestId": "abc123"
+}
+```
 **Response 500 (Server error)
+```json
 {
   "success": false,
   "code": "INTERNAL_ERROR",
