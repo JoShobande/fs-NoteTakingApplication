@@ -38,31 +38,31 @@ export async function POST(req: Request) {
     const body = await req.json()
     const parsed = NoteCreateSchema.safeParse(body);
 
-    // if (!parsed.success) {
-    //   const details = parsed.error.errors.map((e) => ({
-    //     path: e.path.join("."),
-    //     message: e.message,
-    //   }));
+    if (!parsed.success) {
+      const details = parsed.error.issues.map((e) => ({
+        path: e.path.join("."),
+        message: e.message,
+      }));
 
-    //   console.warn(`[POST /create] requestId=${requestId} validation failed`, details);
+      console.warn(`[POST /create] requestId=${requestId} validation failed`, details);
 
-    //   return NextResponse.json(
-    //     {
-    //       error: {
-    //         code: "BAD_REQUEST",
-    //         message: "Validation failed",
-    //         details,
-    //       },
-    //       requestId,
-    //     },
-    //     { status: 400 }
-    //   );
-    // }
+      return NextResponse.json(
+        {
+          error: {
+            code: "BAD_REQUEST",
+            message: "Validation failed",
+            details,
+          },
+          requestId,
+        },
+        { status: 400 }
+      );
+    }
 
     const { title, noteContent, themeColor} = parsed.data;
 
 
-    await prismadb.notes.create({
+    const note = await prismadb.notes.create({
       data: {
         title,
         noteContent,

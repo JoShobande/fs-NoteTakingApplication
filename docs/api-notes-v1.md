@@ -132,7 +132,7 @@ Create a new note for an authenticated user
   "requestId": "abc123"
 }
 ```
-**Response 500 (Server error)
+**Response 500 (Server error)**
 ```json
 {
   "success": false,
