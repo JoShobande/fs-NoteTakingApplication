@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
@@ -14,103 +13,96 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String
-  lastName String
-  email String? @unique
-  emailVerified DateTime?
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName      String
+  lastName       String
+  email          String?   @unique
+  emailVerified  DateTime?
   hashedPassword String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sessions Session[]
-  accounts Account[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
+  accounts       Account[]
 
-  notes Notes[] @relation("UserNotes")
-  folders Folder[]  @relation("UserFolders") 
+  notes   Notes[]  @relation("UserNotes")
+  folders Folder[] @relation("UserFolders")
 }
 
-model Account{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  type String
-  provdier String
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
   providerAccountId String
-  refresh_token String? @db.String
-  access_tokem String? @db.String
-  expires_at Int?
-  token_type String?
-  scope String? @db.String
-  session_state String?
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String? @db.String
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provdier, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
-model Session{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String @unique
-  userId String @db.ObjectId
-  expires DateTime
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
 }
 
-model VerificationToken{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
-  token String @unique
-  expires DateTime
+  token      String   @unique
+  expires    DateTime
 
   @@unique([identifier, token])
 }
 
-model Notes{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
+model Notes {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
   noteContent String
-  themeColor String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId String @db.ObjectId
-  trash Boolean @default(false)
-  archived Boolean @default(false) 
-  folderId  String? @db.ObjectId   
+  themeColor  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.ObjectId
+  trash       Boolean  @default(false)
+  archived    Boolean  @default(false)
+  folderId    String?  @db.ObjectId
 
-  deletedAt DateTime? 
+  deletedAt DateTime?
 
-  user User @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
-  folder       Folder?   @relation("FolderNotes", fields: [folderId], references: [id], onDelete: SetNull)
+  user   User    @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
+  folder Folder? @relation("FolderNotes", fields: [folderId], references: [id], onDelete: SetNull)
 
   @@index([userId])
-  @@map("notes") 
   @@index([folderId])
+  @@map("notes")
 }
-
-
 
 model Folder {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   themeColor String
-  iconColor String
-  userId     String    @db.ObjectId
-  user       User      @relation("UserFolders", fields: [userId], references: [id], onDelete: Cascade)
-  notes      Notes[]   @relation("FolderNotes")  // 1 folder → many notes
+  iconColor  String
+  userId     String  @db.ObjectId
+  user       User    @relation("UserFolders", fields: [userId], references: [id], onDelete: Cascade)
+  notes      Notes[] @relation("FolderNotes") // 1 folder → many notes
 
-  trash Boolean @default(false)
-  deletedAt DateTime? 
-  archived Boolean @default(false) 
+  trash     Boolean   @default(false)
+  deletedAt DateTime?
+  archived  Boolean   @default(false)
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-
-  @@map("folders")
   @@index([userId])
+  @@map("folders")
 }
-
-
-
