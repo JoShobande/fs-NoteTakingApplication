@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import prismadb from '../../../lib/prismadb'
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
+import { errorResponse } from '@components/lib/errorResponse';
+import { logRequest } from '@components/lib/logRequest';
 
 
 export async function GET() {
@@ -11,16 +13,11 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email || !session?.user?.id) {
-      return NextResponse.json(
-        {
-          error:{
-            code: 'UNAUTHORIZED',
-            message: "You must be logged in to access this resource"
-          },
-          requestId
-        },
-        {status: 401}
-      );
+      return errorResponse({
+        code: "UNAUTHORIZED",
+        message: "Validation failed",
+        requestId,
+      });
     }
 
     const notes = await prismadb.notes.findMany({
@@ -40,10 +37,16 @@ export async function GET() {
 
     }))
     
-    const durationMs = (performance.now() - start).toFixed(2);
-    console.info(
-      `[GET /notes] requestId=${requestId} user=${session.user.email} count=${data.length} duration=${durationMs}ms`
-    );
+    const durationMs = (performance.now() - start);
+    logRequest({
+      method: 'GET',
+      route: 'notes',
+      requestId,
+      user: session.user.email,
+      duration:durationMs,
+      status:200
+    })
+    
 
     return NextResponse.json(
       {
@@ -54,21 +57,21 @@ export async function GET() {
       {status:200}
     );
   } catch (err: any) {
-    const durationMs = (performance.now() - start).toFixed(2);
-    console.error(
-      `[GET /notes] requestId=${requestId} duration=${durationMs}ms error=${err.message}`
-    );
+    const durationMs = (performance.now() - start);
+    logRequest({
+      method: 'GET',
+      route: 'notes',
+      requestId,
+      duration:durationMs,
+      status:500,
+      extra: {error: err.message}
+    })
     
-    return NextResponse.json(
-      {
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "Unexpected server error",
-          details: err.message || null,
-        },
-        requestId,
-      },
-      { status: 500 }
-    );
+    return errorResponse({
+      code: 'INTERNAL_ERROR',
+      message:'Unexpected server error',
+      details: err.message || null,
+      requestId
+    })
   }
 }

@@ -3,6 +3,8 @@ import prismadb from '../../../../lib/prismadb'
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import {z} from 'zod'
+import { errorResponse } from '@components/lib/errorResponse';
+import { logRequest } from '@components/lib/logRequest';
 
 const NoteCreateSchema = z.object({
   title: z.string().min(1).max(100, "Title must be between 1 and 100 characters"),
@@ -22,41 +24,38 @@ export async function POST(req: Request) {
 
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        {
-          error: {
-            code: "UNAUTHORIZED",
-            message: "You must be logged in to create a note",
-          },
-          requestId,
-        },
-        { status: 401 }
-      );
+    if (!session?.user?.id || !session?.user?.email) {
+      return errorResponse({
+        code: "UNAUTHORIZED",
+        message: "You must be logged in to create a note",
+        requestId,
+      });
     }
 
     const body = await req.json()
     const parsed = NoteCreateSchema.safeParse(body);
-
+    
     if (!parsed.success) {
       const details = parsed.error.issues.map((e) => ({
         path: e.path.join("."),
         message: e.message,
       }));
-
-      console.warn(`[POST /create] requestId=${requestId} validation failed`, details);
-
-      return NextResponse.json(
-        {
-          error: {
-            code: "BAD_REQUEST",
-            message: "Validation failed",
-            details,
-          },
-          requestId,
-        },
-        { status: 400 }
-      );
+      const durationMs = (performance.now() - start)
+      logRequest({
+        method: 'POST',
+        route: 'create',
+        requestId,
+        user: session.user.email,
+        duration:durationMs,
+        status:400,
+        extra:{error:'validation failed'}
+      })
+       return errorResponse({
+        code: "BAD_REQUEST",
+        message: "Validation failed",
+        requestId,
+        details
+      });
     }
 
     const { title, noteContent, themeColor} = parsed.data;
@@ -70,11 +69,16 @@ export async function POST(req: Request) {
         userId: session.user.id,  
       },
     })
-
-    const durationMs = (performance.now() - start).toFixed(2);
-    console.info(
-      `[POST /create] requestId=${requestId} user=${session.user.email} created noteId=${note.id} duration=${durationMs}ms`
-    );
+    const durationMs = performance.now() - start;
+    logRequest({
+      method: 'POST',
+      route: 'create',
+      requestId,
+      user: session.user.email,
+      duration:durationMs,
+      status:201,
+      extra: {message:'note created'}
+    })
 
     return NextResponse.json(
       {
@@ -88,21 +92,21 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (err: any) {
-    const durationMs = (performance.now() - start).toFixed(2);
-    console.error(
-      `[POST /create] requestId=${requestId} duration=${durationMs}ms error=${err.message}`
-    );
-
-    return NextResponse.json(
-      {
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "Unexpected server error",
-          details: err.message || null,
-        },
-        requestId,
-      },
-      { status: 500 }
-    );
+    const durationMs = (performance.now() - start)
+    logRequest({
+      method: 'POST',
+      route: 'create',
+      requestId,
+      duration:durationMs,
+      status:500,
+      extra: {error: err.message}
+    })
+  
+    return errorResponse({
+      code: 'INTERNAL_ERROR',
+      message:'Unexpected server error',
+      details: err.message || null,
+      requestId
+    })
   }
 }
