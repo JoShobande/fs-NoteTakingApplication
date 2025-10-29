@@ -3,8 +3,8 @@ import prismadb from '../../../../lib/prismadb'
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import {z} from 'zod'
-import { errorResponse } from '@components/lib/errorResponse';
-import { logRequest } from '@components/lib/logRequest';
+import { errorResponse } from '../../../../lib/errorResponse';
+import { logRequest } from '../../../../lib/logRequest';
 
 const NoteCreateSchema = z.object({
   title: z.string().min(1).max(100, "Title must be between 1 and 100 characters"),
