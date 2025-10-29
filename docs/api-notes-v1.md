@@ -9,7 +9,7 @@ Future versions will extend this to include update, delete, and AI-powered featu
 
 ## Resources
 - **Notes**: user-created notes (title, content, metadata)
-- **Users**: authentication context (not yet implemented)
+- **Users**: authentication context 
 - **AI Summarize**: (planned for later)
 
 ---
@@ -75,7 +75,7 @@ Retrieve all notes for the authenticated user sorted by newest first.
 
 
 ```
-### POST /notes
+### POST /notes/create
 
 Create a new note for an authenticated user
 
